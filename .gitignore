@@ -1,5 +1,24 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
+# Misc folders
+[Bb]in/
+[Oo]bj/
+[Tt]emp/
+[Ll]ib/
+[Pp]ackages/
+/[Aa]rtifacts/
+/[Pp]ublish*/
+/tools
+
+/.vs
+
+# ReSharper is a .NET coding add-in
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+*.DotSettings
+
+# JetBrains Rider C# IDE
+.idea*
+
+.editorconfig
+
+*.development.json
