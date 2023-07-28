@@ -26,4 +26,11 @@
       <ProjectReference Include="..\Cnvs.Demo.TaskManagement\Cnvs.Demo.TaskManagement.csproj" />
     </ItemGroup>
 
+
+
+    <ItemGroup>
+      <Folder Include="ControllerTests\" />
+      <Folder Include="IntegrationTests\" />
+    </ItemGroup>
+
 </Project>
