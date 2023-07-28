@@ -7,6 +7,7 @@ public class TaskValidator : AbstractValidator<Task>
 {
     public TaskValidator()
     {
-        RuleFor(x => x.Description).NotEmpty();
+        RuleFor(task => task).NotNull().WithMessage("Task is required");
+        RuleFor(task => task.Description).NotEmpty().WithMessage("Task Description is required");
     }
 }

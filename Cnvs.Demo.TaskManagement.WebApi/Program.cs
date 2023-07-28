@@ -1,5 +1,6 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
+using Cnvs.Demo.TaskManagement.Storage;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -11,6 +12,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ITaskEngine, TaskEngine>();
 builder.Services.AddSingleton<IUserRandomizer, UserRandomizer>();
+builder.Services.AddTransient<ITaskRepository, TaskRepository>();
+builder.Services.AddTransient<IUserRepository, UserRepository>();
 
 var config = new MapperConfiguration(cfg =>
 {
@@ -33,6 +36,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,8 +54,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-builder.Services.AddFluentValidationAutoValidation();
-builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
 app.Run();

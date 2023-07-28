@@ -24,6 +24,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\Cnvs.Demo.TaskManagement.Dto\Cnvs.Demo.TaskManagement.Dto.csproj" />
+      <ProjectReference Include="..\Cnvs.Demo.TaskManagement.Storage\Cnvs.Demo.TaskManagement.Storage.csproj" />
       <ProjectReference Include="..\Cnvs.Demo.TaskManagement\Cnvs.Demo.TaskManagement.csproj" />
     </ItemGroup>
 
