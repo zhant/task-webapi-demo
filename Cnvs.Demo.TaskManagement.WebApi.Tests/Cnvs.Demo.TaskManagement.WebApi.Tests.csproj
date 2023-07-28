@@ -9,6 +9,8 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="FakeItEasy" Version="7.4.0" />
+        <PackageReference Include="FluentAssertions" Version="6.11.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2"/>
         <PackageReference Include="xunit" Version="2.4.2"/>
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
@@ -25,11 +27,15 @@
       <Folder Include="bin\" />
       <Folder Include="ControllerTests\" />
       <Folder Include="IntegrationTests\" />
-      <Folder Include="ValidatationTests\" />
     </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="UnitTest1.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Cnvs.Demo.TaskManagement.Dto\Cnvs.Demo.TaskManagement.Dto.csproj" />
+      <ProjectReference Include="..\Cnvs.Demo.TaskManagement.WebApi\Cnvs.Demo.TaskManagement.WebApi.csproj" />
     </ItemGroup>
 
 </Project>

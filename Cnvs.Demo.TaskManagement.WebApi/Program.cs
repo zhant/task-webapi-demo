@@ -1,5 +1,8 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
+using Cnvs.Demo.TaskManagement.WebApi.Validators;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Task = Cnvs.Demo.TaskManagement.Domain.Task;
 using TaskState = Cnvs.Demo.TaskManagement.Domain.TaskState;
 using User = Cnvs.Demo.TaskManagement.Domain.User;
@@ -44,5 +47,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
 app.Run();
