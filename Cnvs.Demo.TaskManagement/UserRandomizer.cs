@@ -8,13 +8,13 @@ public class UserRandomizer : IUserRandomizer
 
     public User GetRandomUser(IEnumerable<User> users)
     {
-        var enumerable = users.ToList();
+        var enumerable = users.ToArray();
         if (!enumerable.Any())
         {
             return NullUser.Instance;
         }
 
-        var index = Random.Next(enumerable.Count);
+        var index = Random.Next(enumerable.Length);
         return enumerable[index];
     }
 }
