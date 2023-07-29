@@ -55,7 +55,8 @@ public class TaskRotationService : BackgroundService
             return;
         }
         
-        var tasks = _taskEngine.GetTasks().Where(x => x.State == TaskState.InProgress).ToArray();
+        // We select also waiting tasks if they exist to assign them to the new user
+        var tasks = _taskEngine.GetTasks(new[] { TaskState.Waiting, TaskState.Completed }).Value.ToArray();
         foreach (var task in tasks)
         {
             _taskEngine.RotateTask(task);
