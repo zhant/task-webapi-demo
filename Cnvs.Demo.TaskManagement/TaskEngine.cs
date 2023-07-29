@@ -57,9 +57,16 @@ public class TaskEngine : ITaskEngine
         User newUser;
         do
         {
-            newUser = GetRandomUser();
-        } while (task.AssignedUsersHistory.Contains(newUser));
+            newUser = GetRandomUser(usersToExclude: task.AssignedUsersHistory);
+        } while (newUser is NullUser || task.AssignedUsersHistory.Contains(newUser));
 
+        if (newUser is NullUser)
+        {
+            task.State = TaskState.Waiting;
+            task.AssignedUser = null;
+            return;
+        }
+        
         task.AssignedUser = newUser;
         task.AssignedUsersHistory.Add(newUser);
         task.TransferCount++;
