@@ -10,7 +10,6 @@ public class TaskRotationService : BackgroundService
     private const int ChangesBetweenUsers = 3;
     
     private readonly ILogger<TaskRotationService> _logger;
-
     private readonly ITaskEngine _taskEngine;
     private Timer? _timer;
 
@@ -41,14 +40,14 @@ public class TaskRotationService : BackgroundService
 
     public void RotateTasks(object? state)
     {
-        var usersAsync = _taskEngine.GetUsersAsync().Result;
-        if (!usersAsync.IsSuccess)
+        var usersResult = _taskEngine.GetUsers();
+        if (!usersResult.IsSuccess)
         {
-            _logger.LogError("Failed to get users for rotation: {Error}", usersAsync.ErrorMessage);
+            _logger.LogError("Failed to get users for rotation: {Error}", usersResult.ErrorMessage);
             return;
         }
         
-        var users = usersAsync.Value.ToArray();
+        var users = usersResult.Value.ToArray();
         if (users.Length < ChangesBetweenUsers)
         {
             _logger.LogInformation("Not enough users found for rotation: [{UsersLength}]", users.Length);
