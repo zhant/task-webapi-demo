@@ -21,7 +21,7 @@ public class Task
     
     public TaskState State { get; set; }
     public User? AssignedUser { get; set; }
-    internal List<User> AssignedUsersHistory { get; set; } = new();
+    public List<User> AssignedUsersHistory { get; set; } = new();
     public int TransferCount { get; set; }
 }
 
