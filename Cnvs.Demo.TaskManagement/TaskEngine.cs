@@ -84,6 +84,11 @@ public class TaskEngine : ITaskEngine
         return _userRandomizer.GetRandomUser(_users);
     }
 
+    private User GetRandomUser(IEnumerable<User> usersToExclude)
+    {
+        return _userRandomizer.GetRandomUser(_users.Except(usersToExclude));
+    }
+
     public async Task<Result<DomainTask>> CreateTaskAsync(string taskDescription)
     {
         var randomUser = GetRandomUser();
