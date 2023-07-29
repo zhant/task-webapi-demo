@@ -103,9 +103,41 @@ public class TaskEngine : ITaskEngine
         return taskResult;
     }
 
-    public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState state = TaskState.Undefined)
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState[] allowedStates)
     {
-        throw new NotImplementedException();
+        var result = await _taskRepository.GetTasksAsync(allowedStates);
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get tasks: {Error}", result.ErrorMessage);
+        }
+        
+        return result;
+    }
+
+    public Result<IEnumerable<DomainTask>> GetTasks(TaskState[] allowedStates)
+    {
+        // NB in case of > 1 pods always get tasks from DB
+        var tasks = _tasks.Where(x => allowedStates.Contains(x.State));
+        return Result<IEnumerable<DomainTask>>.Success(tasks);
+    }
+
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState state)
+    {   
+        var result = await _taskRepository.GetTasksAsync(state);
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get tasks: {Error}", result.ErrorMessage);
+        }
+        
+        return result;
+    }
+
+    public Result<IEnumerable<DomainTask>> GetTasks(TaskState state)
+    {
+        var r = state != TaskState.Undefined
+            ? _tasks.Where(t => t.State == state)
+            : _tasks;
+        return Result<IEnumerable<DomainTask>>.Success(r);
     }
 
     public async Task<Result<DomainTask>> GetTaskAsync(Guid taskId)
@@ -184,6 +216,11 @@ public class TaskEngine : ITaskEngine
         }
     
         return result;
+    }
+    
+    public Result<IEnumerable<User>> GetUsers()
+    {
+        return Result<IEnumerable<User>>.Success(_users);
     }
     
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()

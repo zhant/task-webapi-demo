@@ -1,3 +1,4 @@
+using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.Extensions.Logging;
 using Task = Cnvs.Demo.TaskManagement.Domain.Task;
 
@@ -30,7 +31,13 @@ public class TaskRepository : ITaskRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<IEnumerable<Task>>> GetTasksAsync()
+    public async Task<Result<IEnumerable<Task>>> GetTasksAsync(TaskState[] taskStates)
+    {
+        _logger.LogInformation("Getting tasks");
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<IEnumerable<Task>>> GetTasksAsync(TaskState taskState)
     {
         _logger.LogInformation("Getting tasks");
         throw new NotImplementedException();
@@ -45,6 +52,12 @@ public class TaskRepository : ITaskRepository
     public async Task<Result<IEnumerable<Task>>> GetUserTasksAsync(string userName)
     {
         _logger.LogInformation("Getting tasks for user {UserName}", userName);
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<IEnumerable<Task>>> GetTasksAsync()
+    {
+        _logger.LogInformation("Getting tasks");
         throw new NotImplementedException();
     }
 }
