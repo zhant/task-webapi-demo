@@ -24,14 +24,14 @@ public class TaskEngine : ITaskEngine
     
     public async System.Threading.Tasks.Task InitializeAsync()
     {
-        var usersResult = await _userRepository.GetUsersAsync();
+        var usersResult = _userRepository.GetUsers();
         if (usersResult.IsFailure)
         {
             _logger.LogCritical("Failed to get users: {Error}", usersResult.ErrorMessage);
             return;
         }
         
-        var tasksResult = await _taskRepository.GetTasksAsync();
+        var tasksResult = _taskRepository.GetTasks();
         if (tasksResult.IsFailure)
         {
             _logger.LogCritical("Failed to get users: {Error}", usersResult.ErrorMessage);
@@ -55,19 +55,28 @@ public class TaskEngine : ITaskEngine
         }
 
         User newUser;
+        var usersToExclude = task.AssignedUsersHistory;
+        if (task.AssignedUser is not null)
+        {
+            usersToExclude = usersToExclude.Append(task.AssignedUser).ToList();
+        }
+        
         do
         {
-            newUser = GetRandomUser(usersToExclude: task.AssignedUsersHistory);
-        } while (newUser is NullUser || task.AssignedUsersHistory.Contains(newUser));
+            newUser = GetRandomUser(usersToExclude: usersToExclude);
+            if (newUser is NullUser)
+            {
+                break;
+            }
+        } while (usersToExclude.Contains(newUser));
 
+        task.AssignedUser = newUser;
         if (newUser is NullUser)
         {
             task.State = TaskState.Waiting;
-            task.AssignedUser = null;
             return;
         }
         
-        task.AssignedUser = newUser;
         task.AssignedUsersHistory.Add(newUser);
         task.TransferCount++;
         if (task.TransferCount < 3)
@@ -86,9 +95,9 @@ public class TaskEngine : ITaskEngine
 
     private User GetRandomUser(IEnumerable<User> usersToExclude)
     {
-        return _userRandomizer.GetRandomUser(_users.Except(usersToExclude));
+        return _userRandomizer.GetRandomUser(_users.Except(usersToExclude, new UserEqualityComparer()));
     }
-
+    
     public async Task<Result<DomainTask>> CreateTaskAsync(string taskDescription)
     {
         var randomUser = GetRandomUser();
@@ -154,7 +163,10 @@ public class TaskEngine : ITaskEngine
 
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync()
     {
-        var result = await _taskRepository.GetTasksAsync();
+        return Result<IEnumerable<DomainTask>>.Success(_tasks);
+        
+        // TODO Get tasks from DB
+        var result = _taskRepository.GetTasks();
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get tasks: {Error}", result.ErrorMessage);
@@ -225,7 +237,7 @@ public class TaskEngine : ITaskEngine
     
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
-        return await _userRepository.GetUsersAsync();
+        return _userRepository.GetUsers();
     }
     
     public async Task<Result<string>> DeleteUserAsync(string userName)
