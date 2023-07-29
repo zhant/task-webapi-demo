@@ -79,7 +79,7 @@ public class TaskEngine : ITaskEngine
         task.AssignedUser = null;
     }
 
-    public User GetRandomUser()
+    private User GetRandomUser()
     {
         return _userRandomizer.GetRandomUser(_users);
     }
