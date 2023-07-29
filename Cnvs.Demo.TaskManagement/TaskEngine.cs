@@ -49,7 +49,7 @@ public class TaskEngine : ITaskEngine
 
     public void RotateTask(DomainTask task)
     {
-        if (task.State != TaskState.InProgress)
+        if (task.State == TaskState.Completed)
         {
             throw new InvalidOperationException("Cannot rotate a completed task");
         }
