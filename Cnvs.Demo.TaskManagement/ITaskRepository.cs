@@ -12,5 +12,5 @@ public interface ITaskRepository
     Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState taskState);
     Task<Result<Domain.Task>> UpdateTaskAsync(Domain.Task task);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksAsync(string userName);
-    Task<Result<IEnumerable<DomainTask>>> GetTasksAsync();
+    Result<IEnumerable<Domain.Task>> GetTasks();
 }

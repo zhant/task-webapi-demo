@@ -38,7 +38,7 @@ public class TaskRepository : ITaskRepository
         // TODO: Implement this Reading from the database
         var tasks = ImmutableList<Task>.Empty;
         _logger.LogInformation("Found {TaskCount} tasks", tasks.Count);
-        
+
         return Result<IEnumerable<Task>>.Success(tasks);
     }
 
@@ -60,9 +60,13 @@ public class TaskRepository : ITaskRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<IEnumerable<Task>>> GetTasksAsync()
+    public Result<IEnumerable<Task>> GetTasks()
     {
         _logger.LogInformation("Getting tasks");
-        throw new NotImplementedException();
+        // TODO: Implement this Reading from the database
+        var tasks = ImmutableList<Task>.Empty;
+        _logger.LogInformation("Found {TaskCount} tasks", tasks.Count);
+
+        return Result<IEnumerable<Domain.Task>>.Success(tasks);
     }
 }

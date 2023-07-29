@@ -58,7 +58,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<Result<IEnumerable<User>>> GetUsersAsync()
+    public Result<IEnumerable<User>> GetUsers()
     {
         try
         {
