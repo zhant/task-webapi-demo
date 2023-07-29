@@ -1,4 +1,5 @@
-﻿using Cnvs.Demo.TaskManagement.Domain;
+﻿using System.Collections.Immutable;
+using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.Extensions.Logging;
 
 namespace Cnvs.Demo.TaskManagement.Storage;
@@ -62,8 +63,12 @@ public class UserRepository : IUserRepository
         try
         {
             _logger.LogInformation("Getting all users");
-            throw new NotImplementedException();
-            // _logger.LogInformation("Successfully retrieved all users.");
+            
+            // TODO: Implement this Reading from the database
+            var users = ImmutableList<User>.Empty;
+
+            _logger.LogInformation("Successfully retrieved all users");
+            return Result<IEnumerable<User>>.Success(users);
         }
         catch (Exception ex)
         {
