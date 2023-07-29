@@ -102,10 +102,8 @@ public class TaskEngine : ITaskEngine
     {
         var randomUser = GetRandomUser();
         var assignedUser = randomUser == NullUser.Instance ? null : randomUser;
-        var task = new DomainTask(Guid.NewGuid(), taskDescription)
-        {
-            AssignedUser = assignedUser
-        };
+        var task = Domain.Task.NewTask("Description 1");
+        task.AssignedUser = assignedUser; 
         
         _tasks.Add(task);
         var taskResult = await _taskRepository.AddTask(task);

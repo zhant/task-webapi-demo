@@ -39,7 +39,7 @@ public class When_Creating_Task
         var fakeUserRepo = A.Fake<IUserRepository>();
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
-        var testTask = new Domain.Task(Guid.NewGuid(), TaskDescription);
+        var testTask = Domain.Task.NewTask(TaskDescription);
 
         A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));

@@ -2,11 +2,21 @@
 
 public class Task
 {
-    public Task(Guid taskId, string taskDescription, TaskState taskState = TaskState.Waiting)
+    private protected Task(Guid taskId, string taskDescription)
     {
         Id = taskId;
         Description = taskDescription ?? throw new ArgumentNullException(nameof(taskDescription));
-        State = taskState;
+    }
+
+    private Task(string taskDescription)
+    {
+        Id = Guid.NewGuid();
+        Description = taskDescription ?? throw new ArgumentNullException(nameof(taskDescription));
+    }
+
+    public static Task NewTask(string taskDescription)
+    {
+        return new Task(taskDescription) { State = TaskState.Waiting };
     }
 
     /// <summary>
@@ -23,13 +33,4 @@ public class Task
     public User? AssignedUser { get; set; }
     public List<User> AssignedUsersHistory { get; set; } = new();
     public int TransferCount { get; set; }
-}
-
-public class NullTask : Task
-{
-    public static NullTask Instance { get; } = new NullTask();
-
-    private NullTask() : base(Guid.Empty, "Null Task")
-    {
-    }
 }

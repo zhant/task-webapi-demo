@@ -27,7 +27,8 @@ public class When_rotating_task
     {
         // Arrange
         _taskEngine = new TaskEngine(_taskRepository, _userRepository, _logger, _userRandomizer);
-        var task = new Domain.Task(Guid.NewGuid(), "Description 1") { State = TaskState.Completed };
+        var task = Domain.Task.NewTask("Description 1");
+        task.State = TaskState.Completed;
 
         // Act
         var action = () => _taskEngine.RotateTask(task);
@@ -40,8 +41,8 @@ public class When_rotating_task
     public void RotateTask_Should_Not_Assign_Same_User_Twice()
     {
         // Arrange
-        var task = new DomainTask(Guid.NewGuid(), "Description 1") 
-            { AssignedUser = new User("User1") }; 
+        var task = Domain.Task.NewTask("Description 1");
+        task.AssignedUser = new User("User1"); 
         var users = new List<User> { new User("User1") };
         
         A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
@@ -62,7 +63,8 @@ public class When_rotating_task
     {
         // Arrange
         var users = new List<User> { new User("User1") };
-        var task = new Domain.Task(Guid.NewGuid(), "Description 1") { AssignedUser = new User("User1") };
+        var task = Domain.Task.NewTask("Description 1");
+        task.AssignedUser = new User("User1"); 
         task.AssignedUsersHistory = new List<User> { task.AssignedUser };
 
         A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
