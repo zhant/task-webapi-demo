@@ -5,6 +5,10 @@ namespace Cnvs.Demo.TaskManagement;
 
 public class TaskRotationService : BackgroundService
 {
+    // Could be configurable with IOptions, but this is out of the scope for this demo.
+    private const int RotationTimeMinutes = 2;
+    private const int ChangesBetweenUsers = 3;
+    
     private readonly ILogger<TaskRotationService> _logger;
 
     private readonly ITaskEngine _taskEngine;
@@ -19,13 +23,13 @@ public class TaskRotationService : BackgroundService
     protected override async DomainTask ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Task rotation service is starting");
-        
-        _timer = new Timer(RotateTasks, null, TimeSpan.Zero, TimeSpan.FromMinutes(2));
+
+        _timer = new Timer(RotateTasks, null, TimeSpan.Zero, TimeSpan.FromMinutes(RotationTimeMinutes));
         stoppingToken.Register(() => _timer.Dispose());
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await DomainTask.Delay(TimeSpan.FromMinutes(2), stoppingToken);
+            await DomainTask.Delay(TimeSpan.FromMinutes(RotationTimeMinutes), stoppingToken);
         }
     }
 
@@ -45,7 +49,7 @@ public class TaskRotationService : BackgroundService
         }
         
         var users = usersAsync.Value.ToArray();
-        if (users.Length < 3)
+        if (users.Length < ChangesBetweenUsers)
         {
             _logger.LogInformation("Not enough users found for rotation: [{UsersLength}]", users.Length);
             return;
