@@ -22,8 +22,10 @@ public class UsersController : ControllerBase
     {
         var domainUser = _mapper.Map<Domain.User>(user);
         var result = await _taskEngine.CreateUserAsync(domainUser);
-        return result.IsSuccess 
-            ? Ok(_mapper.Map<User>(result.Value))
+        return result.IsSuccess
+            ? CreatedAtRoute("GetUser", 
+                new { userName = result.Value.Name }, 
+                _mapper.Map<User>(result.Value))
             : BadRequest(result.ErrorMessage);
     }
 
