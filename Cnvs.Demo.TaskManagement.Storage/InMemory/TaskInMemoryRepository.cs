@@ -55,7 +55,7 @@ public class TaskInMemoryRepository : ITaskRepository
         return Result<DomainTask>.Success(task);
     }
 
-    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(string userName)
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByNameAsync(string userName)
     {
         var tasks = _tasks.Values.Where(t => t.AssignedUser?.Name == userName).ToList();
 
@@ -71,5 +71,14 @@ public class TaskInMemoryRepository : ITaskRepository
         return tasks.Any()
             ? Result<IEnumerable<DomainTask>>.Success(tasks) 
             : Result<IEnumerable<DomainTask>>.Failure("No tasks found", ImmutableList<DomainTask>.Empty);
+    }
+
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(string id)
+    {
+        var tasks = _tasks.Values.Where(t => t.AssignedUser?.Id == id).ToList();
+
+        return tasks.Any() 
+            ? Result<IEnumerable<DomainTask>>.Success(tasks) 
+            : Result<IEnumerable<DomainTask>>.Failure("No tasks found for user", ImmutableList<DomainTask>.Empty);
     }
 }

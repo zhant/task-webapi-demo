@@ -54,7 +54,7 @@ public class TaskRepository : ITaskRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<IEnumerable<Task>>> GetUserTasksAsync(string userName)
+    public async Task<Result<IEnumerable<Task>>> GetUserTasksByNameAsync(string userName)
     {
         _logger.LogInformation("Getting tasks for user {UserName}", userName);
         throw new NotImplementedException();
@@ -70,5 +70,13 @@ public class TaskRepository : ITaskRepository
         _logger.LogInformation("Found {TaskCount} tasks", tasks.Count);
 
         return Result<IEnumerable<Domain.Task>>.Success(tasks);
+    }
+
+    public async Task<Result<IEnumerable<Task>>> GetUserTasksAsync(string id)
+    {
+        _logger.LogInformation("Getting tasks for user {UserId}", id);
+        throw new NotImplementedException();
+
+        // TODO: Implement this Reading from the database
     }
 }

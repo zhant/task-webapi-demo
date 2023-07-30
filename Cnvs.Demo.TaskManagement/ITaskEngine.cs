@@ -21,8 +21,7 @@ public interface ITaskEngine
 
     Task<Result<string>> DeleteUserAsync(string name) => Task.FromResult(Result<string>.Success(name));
     
-    Task<Result<IEnumerable<Domain.Task>>> GetUserTasksAsync(string name) => 
-        Task.FromResult(Result<IEnumerable<Domain.Task>>.Success(Enumerable.Empty<Domain.Task>()));
+    Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserNameAsync(string name);
 
     void RotateTask(Domain.Task task);
     IEnumerable<Domain.Task> GetTasks();
@@ -31,4 +30,5 @@ public interface ITaskEngine
     Result<IEnumerable<User>> GetUsers();
     Task<Result<User>> GetUserAsync(string id);
     Task<Result<User>> UpdateUserAsync(User domainUser);
+    Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserAsync(string name);
 }

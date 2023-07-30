@@ -80,7 +80,16 @@ public class UsersController : ControllerBase
     [HttpGet("{id}/tasks")]
     public async Task<IActionResult> GetUserTasks(string id)
     {
-        var result = await _taskEngine.GetUserTasksAsync(id);
+        var result = await _taskEngine.GetUserTasksByUserNameAsync(id);
+        return result.IsSuccess 
+            ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
+            : BadRequest(result.ErrorMessage);
+    }
+    
+    [HttpGet("{userName}/tasks")]
+    public async Task<IActionResult> GetUserTasksByUserName(string name)
+    {
+        var result = await _taskEngine.GetUserTasksByUserAsync(name);
         return result.IsSuccess 
             ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
             : BadRequest(result.ErrorMessage);

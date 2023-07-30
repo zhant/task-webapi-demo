@@ -260,6 +260,12 @@ public class TaskEngine : ITaskEngine
         throw new NotImplementedException();
     }
 
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByUserAsync(string id)
+    {
+        var result = await _taskRepository.GetUserTasksAsync(id);
+        return result;
+    }
+
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
         return _userRepository.GetUsers();
@@ -271,9 +277,9 @@ public class TaskEngine : ITaskEngine
         return result;
     }
     
-    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(string userName)
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByUserNameAsync(string userName)
     {
-        var result = await _taskRepository.GetUserTasksAsync(userName);
+        var result = await _taskRepository.GetUserTasksByNameAsync(userName);
         return result;
     }
 }
