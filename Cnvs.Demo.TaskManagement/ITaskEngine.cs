@@ -11,7 +11,7 @@ public interface ITaskEngine
     Task<Result<Domain.Task>> GetTaskAsync(Guid id);
     
     Task<Result<Domain.Task>> CreateTaskAsync(string taskDescription);
-    Task<Result<string>> DeleteTaskAsync(Guid id) => Task.FromResult(Result<string>.Success(id.ToString()));
+    Task<Result<string>> DeleteTaskAsync(Guid id);
     
     Task<Result<IEnumerable<User>>> GetUsersAsync() => 
         Task.FromResult(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));

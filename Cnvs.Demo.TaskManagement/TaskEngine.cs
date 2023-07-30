@@ -70,10 +70,10 @@ public class TaskEngine : ITaskEngine
             }
         } while (usersToExclude.Contains(newUser));
 
-        task.AssignedUser = newUser;
+        task.StartWithUser(newUser);
         if (newUser is NullUser)
         {
-            task.State = TaskState.Waiting;
+            task.Suspend();
             return;
         }
         
@@ -84,8 +84,7 @@ public class TaskEngine : ITaskEngine
             return;
         }
 
-        task.State = TaskState.Completed;
-        task.AssignedUser = null;
+        task.Complete();
     }
 
     private User GetRandomUser()
@@ -100,9 +99,13 @@ public class TaskEngine : ITaskEngine
     
     public async Task<Result<DomainTask>> CreateTaskAsync(string taskDescription)
     {
-        var randomUser = GetRandomUser();
-        var assignedUser = randomUser == NullUser.Instance ? null : randomUser;
-        var task = Domain.Task.NewTask("Description 1");
+        if (string.IsNullOrWhiteSpace(taskDescription))
+        {
+            throw new ArgumentException("Description cannot be empty");
+        }
+
+        var assignedUser = GetRandomUser();
+        var task = Domain.Task.NewTask(taskDescription);
         task.AssignedUser = assignedUser; 
         
         _tasks.Add(task);
@@ -161,9 +164,6 @@ public class TaskEngine : ITaskEngine
 
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync()
     {
-        return Result<IEnumerable<DomainTask>>.Success(_tasks);
-        
-        // TODO Get tasks from DB
         var result = _taskRepository.GetTasks();
         if (result.IsFailure)
         {
@@ -184,9 +184,19 @@ public class TaskEngine : ITaskEngine
         return result;
     }
 
-    public async System.Threading.Tasks.Task DeleteTaskAsync(Guid taskId)
+    public async Task<Result<string>> DeleteTaskAsync(Guid taskId)
     {
-        await _taskRepository.DeleteTaskAsync(taskId);
+        var result = await _taskRepository.GetTaskAsync(taskId);
+        if(result.IsFailure)
+        {
+            _logger.LogError("Failed to get task {TaskId}: {Error}", taskId, result.ErrorMessage);
+            return Result<string>.Failure(result.ErrorMessage, taskId.ToString());
+        }
+        
+        var task = result.Value;
+        task.Delete();
+        await _taskRepository.UpdateTaskAsync(task);
+        return Result<string>.Success(taskId.ToString());
     }
     
     public async Task<Result<User>> CreateUserAsync(User userToCreate)

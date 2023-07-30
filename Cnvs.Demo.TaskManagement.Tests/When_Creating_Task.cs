@@ -77,7 +77,7 @@ public class When_Creating_Task
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.AssignedUser.Should().BeNull();
+        result.Value.AssignedUser.Should().BeOfType<NullUser>();
     }
 
     [Fact]
@@ -103,5 +103,42 @@ public class When_Creating_Task
         // Assert
         result.IsSuccess.Should().BeTrue();
         result.Value.AssignedUser.Should().BeEquivalentTo(testUser);
+    }
+    
+    [Fact]
+    public async Task CreateTaskAsync_ShouldThrowArgumentException_WhenTaskDescriptionIsEmpty()
+    {
+        // Arrange
+        var fakeTaskRepo = A.Fake<ITaskRepository>();
+        var fakeUserRepo = A.Fake<IUserRepository>();
+        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
+        var userRandomizer = A.Fake<IUserRandomizer>();
+        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
+        const string emptyDescription = "";
+
+        // Act
+        Func<Task> act = async () => await taskEngine.CreateTaskAsync(emptyDescription);
+
+        // Assert
+        await act.Should().ThrowExactlyAsync<ArgumentException>()
+            .WithMessage("Description cannot be empty");
+    }
+
+    [Fact]
+    public async Task CreateTaskAsync_ShouldAddTaskToRepository_WhenTaskIsValid()
+    {
+        // Arrange
+        var fakeTaskRepo = A.Fake<ITaskRepository>();
+        var fakeUserRepo = A.Fake<IUserRepository>();
+        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
+        var userRandomizer = A.Fake<IUserRandomizer>();
+        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
+        const string validDescription = "Valid description";
+
+        // Act
+        await taskEngine.CreateTaskAsync(validDescription);
+
+        // Assert
+        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._)).MustHaveHappened();
     }
 }
