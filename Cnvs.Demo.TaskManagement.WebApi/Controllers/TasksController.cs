@@ -34,8 +34,12 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> AddTask(Dto.Task task)
     {
         var result = await _taskEngine.CreateTaskAsync(task.Description);
+        // change Ok to CreatedAtRoute
+        var taskCreated = _mapper.Map<Dto.Task>(result.Value);
         return result.IsSuccess 
-            ? Ok(_mapper.Map<Dto.Task>(result.Value))
+            ? CreatedAtRoute("GetTask", 
+                new { id = taskCreated.Id }, 
+                taskCreated)
             : BadRequest(result.ErrorMessage);
     }
     
