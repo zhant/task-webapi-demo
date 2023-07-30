@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("tasks")]
+[Route("task-management/tasks")]
 public class TasksController : ControllerBase
 {
     private readonly ITaskEngine _taskEngine;
@@ -16,11 +16,7 @@ public class TasksController : ControllerBase
         _mapper = mapper;
     }
 
-    /// <summary>
-    ///  GET Tasks
-    /// </summary>
-    /// <returns></returns>
-    [HttpGet(Name = "GetTasks")]
+    [HttpGet]
     public async Task<IActionResult> GetTasks()
     {
         var result = await _taskEngine.GetTasksAsync();
@@ -29,22 +25,7 @@ public class TasksController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
     
-    // Add task
-    [HttpPost(Name = "AddTask")]
-    public async Task<IActionResult> AddTask(Dto.Task task)
-    {
-        var result = await _taskEngine.CreateTaskAsync(task.Description);
-        // change Ok to CreatedAtRoute
-        var taskCreated = _mapper.Map<Dto.Task>(result.Value);
-        return result.IsSuccess 
-            ? CreatedAtRoute("GetTask", 
-                new { id = taskCreated.Id }, 
-                taskCreated)
-            : BadRequest(result.ErrorMessage);
-    }
-    
-    // Get task
-    [HttpGet("{id:guid}", Name = "GetTask")]
+    [HttpGet("{id:guid}")]
     public async Task<IActionResult> GetTask(Guid id)
     {
         var result = await _taskEngine.GetTaskAsync(id);
@@ -53,13 +34,50 @@ public class TasksController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
     
-    // Delete task
-    [HttpDelete("{id:guid}", Name = "DeleteTask")]
+    // [HttpGet("{description}")]
+    // public async Task<IActionResult> GetTaskByDescription(string description)
+    // {
+    //     var result = await _taskEngine.GetTaskByDescriptionAsync(description);
+    //     return result.IsSuccess 
+    //         ? Ok(_mapper.Map<Dto.Task>(result.Value))
+    //         : BadRequest(result.ErrorMessage);
+    // }
+
+    [HttpGet("{id:guid}/users")]
+    public async Task<IActionResult> GetTaskUsers(Guid id)
+    {
+        var result = await _taskEngine.GetTaskUsersAsync(id);
+        return result.IsSuccess 
+            ? Ok(result.Value.Select(x => _mapper.Map<Dto.User>(x)))
+            : BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> CreateTask(Dto.Task task)
+    {
+        var result = await _taskEngine.CreateTaskAsync(task.Description);
+        var taskCreated = _mapper.Map<Dto.Task>(result.Value);
+        return result.IsSuccess 
+            ? CreatedAtAction(nameof(GetTask), new { id = taskCreated.Id }, taskCreated)
+            : BadRequest(result.ErrorMessage);
+    }
+    
+    [HttpPut]
+    public async Task<IActionResult> UpdateTask(Dto.Task task)
+    {
+        throw new NotImplementedException();
+        // var result = await _taskEngine.UpdateTaskAsync(task.Id, task.Description);
+        // return result.IsSuccess 
+            // ? Ok(_mapper.Map<Dto.Task>(result.Value))
+            // : BadRequest(result.ErrorMessage);
+    }
+
+    [HttpDelete("{id:guid}")]
     public async Task<IActionResult> DeleteTask(Guid id)
     {
         var result = await _taskEngine.DeleteTaskAsync(id);
         return result.IsSuccess 
-            ? Ok(result.Value)
+            ? Ok(_mapper.Map<Dto.Task>(result.Value))
             : BadRequest(result.ErrorMessage);
     }
 }
