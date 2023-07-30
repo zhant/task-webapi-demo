@@ -1,4 +1,6 @@
-﻿namespace Cnvs.Demo.TaskManagement.Domain;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace Cnvs.Demo.TaskManagement.Domain;
 
 public class User
 {
@@ -31,13 +33,20 @@ public class User
     {
         return new User(name);
     }
-}
 
-public class NullUser : User
-{
-    public static NullUser Instance { get; } = new();
-
-    private NullUser() : base("Null User", Guid.Empty)
+    public override bool Equals(object? obj)
     {
+        if (obj is null)
+        {
+            return false;
+        }
+        
+        return Name == ((User)obj).Name && Id == ((User)obj).Id;
+    }
+
+    [SuppressMessage("ReSharper", "NonReadonlyMemberInGetHashCode")]
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode() ^ Id.GetHashCode();
     }
 }
