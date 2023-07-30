@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class TaskController : ControllerBase
+[Route("tasks")]
+public class TasksController : ControllerBase
 {
     private readonly ITaskEngine _taskEngine;
     private readonly IMapper _mapper;
 
-    public TaskController(ITaskEngine taskEngine, IMapper mapper)
+    public TasksController(ITaskEngine taskEngine, IMapper mapper)
     {
         _taskEngine = taskEngine;
         _mapper = mapper;

@@ -5,13 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
-public class UserController : ControllerBase
+[Route("users")]
+public class UsersController : ControllerBase
 {
     private readonly ITaskEngine _taskEngine;
     private readonly IMapper _mapper;
 
-    public UserController(ITaskEngine taskEngine, IMapper mapper)
+    public UsersController(ITaskEngine taskEngine, IMapper mapper)
     {
         _taskEngine = taskEngine;
         _mapper = mapper;
