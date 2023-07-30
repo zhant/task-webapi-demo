@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Storage.InMemory;
 
@@ -51,7 +52,6 @@ public class TaskInMemoryRepository : ITaskRepository
     public async Task<Result<DomainTask>> UpdateTaskAsync(DomainTask task)
     {
         _tasks[task.Id] = task;
-        
         return Result<DomainTask>.Success(task);
     }
 
@@ -68,7 +68,7 @@ public class TaskInMemoryRepository : ITaskRepository
     {
         var tasks = _tasks.Values.ToList();
 
-        return tasks.Any() 
+        return tasks.Any()
             ? Result<IEnumerable<DomainTask>>.Success(tasks) 
             : Result<IEnumerable<DomainTask>>.Failure("No tasks found", ImmutableList<DomainTask>.Empty);
     }
