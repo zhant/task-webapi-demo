@@ -48,8 +48,10 @@ public class UserRepository : IUserRepository
         try
         {
             _logger.LogInformation("Searching for user: {userName}", userName);
-            throw new NotImplementedException();
+            // TODO: Implement this Reading from the database
+            var nullUser = NullUser.Instance;
             // _logger.LogInformation("Found user: {userName}", userName);
+            return await System.Threading.Tasks.Task.FromResult(Result<User>.Success(nullUser));
         }
         catch (Exception ex)
         {
