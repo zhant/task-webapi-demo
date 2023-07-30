@@ -81,4 +81,22 @@ public class TaskInMemoryRepository : ITaskRepository
             ? Result<IEnumerable<DomainTask>>.Success(tasks) 
             : Result<IEnumerable<DomainTask>>.Failure("No tasks found for user", ImmutableList<DomainTask>.Empty);
     }
+
+    public async Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id)
+    {
+        var taskExists = _tasks.TryGetValue(id, out var task);
+    
+        if (!taskExists || task is null)
+        {
+            return Result<IEnumerable<User>>.Failure("Task not found", ImmutableList<User>.Empty);
+        }
+
+        var users = task.AssignedUsersHistory.ToList();
+        if (task.AssignedUser != null && !task.AssignedUser.Equals(NullUser.Instance))
+        {
+            users.Add(task.AssignedUser!);
+        }
+        
+        return await Task.FromResult(Result<IEnumerable<User>>.Success(users));
+    }
 }

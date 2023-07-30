@@ -79,4 +79,9 @@ public class TaskRepository : ITaskRepository
 
         // TODO: Implement this Reading from the database
     }
+
+    public async Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -14,4 +14,5 @@ public interface ITaskRepository
     Task<Result<IEnumerable<DomainTask>>> GetUserTasksByNameAsync(string userName);
     Result<IEnumerable<DomainTask>> GetTasks();
     Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(string id);
+    Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id);
 }
