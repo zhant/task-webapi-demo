@@ -2,8 +2,13 @@
 
 public class Task
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
-    public string Description { get; set; } = string.Empty;
-    public TaskState State { get; set; } = TaskState.Waiting;
+    public Guid Id { get; set; }
+    public string Description { get; set; } = null!;
+    public TaskState State { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? SuspendedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }
 

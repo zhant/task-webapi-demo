@@ -16,7 +16,7 @@ public class Task
 
     public static Task NewTask(string taskDescription)
     {
-        return new Task(taskDescription) { State = TaskState.Waiting };
+        return new Task(taskDescription) { State = TaskState.Waiting, CreatedAt = DateTime.UtcNow };
     }
 
     /// <summary>
@@ -30,7 +30,53 @@ public class Task
     public string Description { get; set; }
     
     public TaskState State { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? SuspendedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
     public User? AssignedUser { get; set; }
     public List<User> AssignedUsersHistory { get; set; } = new();
     public int TransferCount { get; set; }
+    public bool IsDeleted { get; set; }
+
+    public void Complete()
+    {
+        if (State != TaskState.InProgress)
+        {
+            throw new InvalidOperationException("Cannot complete a task that is not in the in progress state");
+        }
+
+        State = TaskState.Completed;
+        CompletedAt = DateTime.UtcNow;
+        AssignedUser = NullUser.Instance;
+    }
+
+    public void Suspend()
+    {
+        State = TaskState.Waiting;
+        SuspendedAt = DateTime.UtcNow;
+        AssignedUser = NullUser.Instance;
+    }
+
+    public void StartWithUser(User newUser)
+    {
+        AssignedUser = newUser;
+        if (AssignedUser is null && State != TaskState.Waiting)
+        {
+            throw new InvalidOperationException("Cannot start a task that is not in the waiting state");
+        }
+
+        State = TaskState.InProgress;
+        StartedAt ??= DateTime.UtcNow;
+        SuspendedAt = null;
+    }
+    
+    public void Delete()
+    {
+        IsDeleted = true;
+        AssignedUser = NullUser.Instance;
+        DeletedAt = DateTime.UtcNow;
+    }
 }
