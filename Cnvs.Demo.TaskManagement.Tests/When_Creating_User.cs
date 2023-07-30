@@ -26,7 +26,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(UserName);
+        var result = await taskEngine.CreateUserAsync(new User(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -48,7 +48,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(UserName);
+        var result = await taskEngine.CreateUserAsync(new User(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -74,7 +74,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(UserName);
+        var result = await taskEngine.CreateUserAsync(new User(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -98,7 +98,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(UserName);
+        var result = await taskEngine.CreateUserAsync(new User(UserName));
 
         // Assert
         result.IsSuccess.Should().BeTrue();

@@ -189,8 +189,9 @@ public class TaskEngine : ITaskEngine
         await _taskRepository.DeleteTaskAsync(taskId);
     }
     
-    public async Task<Result<User>> CreateUserAsync(string userName)
+    public async Task<Result<User>> CreateUserAsync(User userToCreate)
     {
+        var userName = userToCreate.Name;
         var result = await _userRepository.GetUserAsync(userName);
         if (result.IsFailure)
         {
