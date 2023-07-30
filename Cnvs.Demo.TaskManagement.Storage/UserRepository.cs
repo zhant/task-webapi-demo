@@ -1,6 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.Extensions.Logging;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Storage;
 
@@ -33,8 +34,9 @@ public class UserRepository : IUserRepository
         try
         {
             _logger.LogInformation("Adding new user: {userName}", user.Name);
-            throw new NotImplementedException();
+            // TODO: Implement this Writing to the database
             // _logger.LogInformation("Successfully added user: {userName}", user.Name);
+            return await Task.FromResult(Result<User>.Success(user));
         }
         catch (Exception ex)
         {
