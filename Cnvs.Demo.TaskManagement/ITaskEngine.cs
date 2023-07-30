@@ -31,4 +31,5 @@ public interface ITaskEngine
     Task<Result<User>> GetUserAsync(string id);
     Task<Result<User>> UpdateUserAsync(User domainUser);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserAsync(string name);
+    Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id);
 }

@@ -266,6 +266,11 @@ public class TaskEngine : ITaskEngine
         return result;
     }
 
+    public async Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id)
+    {
+        return await _taskRepository.GetTaskUsersAsync(id);
+    }
+
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
         return _userRepository.GetUsers();
