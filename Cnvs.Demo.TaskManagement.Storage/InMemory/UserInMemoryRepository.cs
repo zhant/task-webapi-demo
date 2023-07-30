@@ -3,7 +3,7 @@ using System.Collections.Immutable;
 using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 
-namespace Cnvs.Demo.TaskManagement.Storage;
+namespace Cnvs.Demo.TaskManagement.Storage.InMemory;
 
 public class UserInMemoryRepository : IUserRepository
 {

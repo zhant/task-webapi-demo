@@ -1,6 +1,7 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
 using Cnvs.Demo.TaskManagement.Storage;
+using Cnvs.Demo.TaskManagement.Storage.InMemory;
 using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
 using FluentValidation;
@@ -13,8 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ITaskEngine, TaskEngine>();
 builder.Services.AddSingleton<IUserRandomizer, UserRandomizer>();
-builder.Services.AddTransient<ITaskRepository, TaskRepository>();
-builder.Services.AddTransient<IUserRepository, UserRepository>();
+builder.Services.AddTransient<ITaskRepository, TaskInMemoryRepository>();
+builder.Services.AddTransient<IUserRepository, UserInMemoryRepository>();
 
 var config = new MapperConfiguration(cfg =>
 {
