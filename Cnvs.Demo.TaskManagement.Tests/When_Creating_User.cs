@@ -9,7 +9,7 @@ namespace Cnvs.Demo.TaskManagement.Tests;
 public class When_Creating_User
 {
     private const string UserName = "TestUser";
-    private readonly User testUser = new("TestUser");
+    private readonly User _testUser = new("TestUser");
     
     [Fact]
     public async Task CreateUserAsync_ShouldReturnFailure_WhenGetUserAsyncFails()
@@ -43,7 +43,7 @@ public class When_Creating_User
         var userRandomizer = A.Fake<IUserRandomizer>();
 
         A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
-            .Returns(Result<User>.Success(testUser));
+            .Returns(Result<User>.Success(_testUser));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
@@ -93,7 +93,7 @@ public class When_Creating_User
         A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
             .Returns(Result<User>.Success(NullUser.Instance));
         A.CallTo(() => fakeUserRepo.AddUser(A<User>.That.Matches(u => u.Name == UserName)))
-            .Returns(Result<User>.Success(testUser));
+            .Returns(Result<User>.Success(_testUser));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
@@ -102,6 +102,6 @@ public class When_Creating_User
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().Be(testUser);
+        result.Value.Should().Be(_testUser);
     }
 }
