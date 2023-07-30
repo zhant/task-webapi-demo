@@ -2,14 +2,8 @@
 
 public class User
 {
-    public string Name { get; set; } = string.Empty;
-
-    public User()
-    {
-    }
-
-    public User(string name)
-    {
-        Name = name;
-    }
+    public string? Id { get; set; }
+    public string Name { get; set; } = null!;
+    public DateTime CreatedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
 }

@@ -16,7 +16,7 @@ public interface ITaskEngine
     Task<Result<IEnumerable<User>>> GetUsersAsync() => 
         Task.FromResult(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));
 
-    Task<Result<User>> GetUserAsync(string name) => Task.FromResult(Result<User>.Success(new User(name)));
+    Task<Result<User>> GetUserAsync(string name) => Task.FromResult(Result<User>.Success(User.Create(name)));
     Task<Result<User>> CreateUserAsync(User user) => Task.FromResult(Result<User>.Success(user));
 
     Task<Result<string>> DeleteUserAsync(string name) => Task.FromResult(Result<string>.Success(name));

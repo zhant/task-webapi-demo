@@ -44,7 +44,7 @@ public class When_Creating_Task
         A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));
         A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
-            .Returns(new User("TestUser"));
+            .Returns(User.Create("TestUser"));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
@@ -90,7 +90,7 @@ public class When_Creating_Task
         var userRandomizer = A.Fake<IUserRandomizer>();
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
-        var testUser = new User("TestUser");
+        var testUser = User.Create("TestUser");
         A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(testUser);
         

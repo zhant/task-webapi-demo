@@ -205,7 +205,7 @@ public class TaskEngine : ITaskEngine
             return Result<User>.Failure($"User with name {userName} already exists", NullUser.Instance);
         }
         
-        var user = new User(userName);
+        var user = User.Create(userName);
         _users.Add(user);
         var addUser = await _userRepository.AddUser(user);
         if (addUser.IsFailure)

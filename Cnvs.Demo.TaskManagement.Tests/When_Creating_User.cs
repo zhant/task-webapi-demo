@@ -9,7 +9,7 @@ namespace Cnvs.Demo.TaskManagement.Tests;
 public class When_Creating_User
 {
     private const string UserName = "TestUser";
-    private readonly User _testUser = new("TestUser");
+    private readonly User _testUser = User.Create(UserName);
     
     [Fact]
     public async Task CreateUserAsync_ShouldReturnFailure_WhenGetUserAsyncFails()
@@ -26,7 +26,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(new User(UserName));
+        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -48,7 +48,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(new User(UserName));
+        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -74,7 +74,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(new User(UserName));
+        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -98,7 +98,7 @@ public class When_Creating_User
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         // Act
-        var result = await taskEngine.CreateUserAsync(new User(UserName));
+        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeTrue();

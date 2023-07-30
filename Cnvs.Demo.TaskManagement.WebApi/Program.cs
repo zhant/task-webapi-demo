@@ -1,6 +1,5 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
-using Cnvs.Demo.TaskManagement.Storage;
 using Cnvs.Demo.TaskManagement.Storage.InMemory;
 using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;

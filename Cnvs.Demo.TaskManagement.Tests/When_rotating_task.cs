@@ -42,8 +42,8 @@ public class When_rotating_task
     {
         // Arrange
         var task = Domain.Task.NewTask("Description 1");
-        task.AssignedUser = new User("User1"); 
-        var users = new List<User> { new User("User1") };
+        task.AssignedUser = User.Create("User1"); 
+        var users = new List<User> { User.Create("User1") };
         
         A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
         A.CallTo(() => _taskRepository.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
@@ -62,9 +62,9 @@ public class When_rotating_task
     public void RotateTask_Should_SetStateAsWaiting_When_NoUsersAvailable()
     {
         // Arrange
-        var users = new List<User> { new User("User1") };
+        var users = new List<User> { User.Create("User1") };
         var task = Domain.Task.NewTask("Description 1");
-        task.AssignedUser = new User("User1"); 
+        task.AssignedUser = User.Create("User1"); 
         task.AssignedUsersHistory = new List<User> { task.AssignedUser };
 
         A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
