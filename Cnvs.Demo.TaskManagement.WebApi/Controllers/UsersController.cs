@@ -17,7 +17,6 @@ public class UsersController : ControllerBase
         _mapper = mapper;
     }
 
-    // Add user
     [HttpPost(Name = "AddUser")]
     public async Task<IActionResult> AddUser(User user)
     {
