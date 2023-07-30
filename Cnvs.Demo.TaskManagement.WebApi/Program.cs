@@ -1,6 +1,7 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
 using Cnvs.Demo.TaskManagement.Storage;
+using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
@@ -42,7 +43,6 @@ builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -54,5 +54,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseMiddleware<ExceptionMiddleware>();
+// TODO - add other middleware here as needed
 
 app.Run();
