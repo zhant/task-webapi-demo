@@ -20,7 +20,7 @@ public class When_Creating_User
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
 
-        A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
+        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Failure("Database error", NullUser.Instance));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
@@ -42,7 +42,7 @@ public class When_Creating_User
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
 
-        A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
+        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(_testUser));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
@@ -64,7 +64,7 @@ public class When_Creating_User
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
 
-        A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
+        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(NullUser.Instance));
         
         var failure = Result<User>.Failure($"Failed to add user to repository: {UserName}", NullUser.Instance);
@@ -90,7 +90,7 @@ public class When_Creating_User
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
 
-        A.CallTo(() => fakeUserRepo.GetUserAsync(UserName))
+        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(NullUser.Instance));
         A.CallTo(() => fakeUserRepo.AddUser(A<User>.That.Matches(u => u.Name == UserName)))
             .Returns(Result<User>.Success(_testUser));

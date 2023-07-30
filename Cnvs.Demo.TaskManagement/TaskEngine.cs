@@ -192,7 +192,7 @@ public class TaskEngine : ITaskEngine
     public async Task<Result<User>> CreateUserAsync(User userToCreate)
     {
         var userName = userToCreate.Name;
-        var result = await _userRepository.GetUserAsync(userName);
+        var result = await _userRepository.GetUserByNameAsync(userName);
         if (result.IsFailure)
         {
             var message = $"Failed to get user {userName}: {result.ErrorMessage}";
@@ -218,9 +218,9 @@ public class TaskEngine : ITaskEngine
         return Result<User>.Success(addUser.Value);
     }
     
-    public async Task<Result<User>> GetUserAsync(string userName)
+    public async Task<Result<User>> GetUserByNameAsync(string userName)
     {
-        var result = await _userRepository.GetUserAsync(userName);
+        var result = await _userRepository.GetUserByNameAsync(userName);
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get user {UserName}: {Error}", userName, result.ErrorMessage);
@@ -233,7 +233,23 @@ public class TaskEngine : ITaskEngine
     {
         return Result<IEnumerable<User>>.Success(_users);
     }
+
+    public async Task<Result<User>> GetUserAsync(string id)
+    {
+        var result = await _userRepository.GetUserAsync(id);
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get user {Id}: {Error}", id, result.ErrorMessage);
+        }
     
+        return result;
+    }
+
+    public async Task<Result<User>> UpdateUserAsync(User domainUser)
+    {
+        throw new NotImplementedException();
+    }
+
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
         return _userRepository.GetUsers();

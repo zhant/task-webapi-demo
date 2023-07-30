@@ -16,7 +16,7 @@ public interface ITaskEngine
     Task<Result<IEnumerable<User>>> GetUsersAsync() => 
         Task.FromResult(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));
 
-    Task<Result<User>> GetUserAsync(string name) => Task.FromResult(Result<User>.Success(User.Create(name)));
+    Task<Result<User>> GetUserByNameAsync(string name);
     Task<Result<User>> CreateUserAsync(User user) => Task.FromResult(Result<User>.Success(user));
 
     Task<Result<string>> DeleteUserAsync(string name) => Task.FromResult(Result<string>.Success(name));
@@ -29,4 +29,6 @@ public interface ITaskEngine
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
     Result<IEnumerable<Domain.Task>> GetTasks(TaskState[] allowedStates);
     Result<IEnumerable<User>> GetUsers();
+    Task<Result<User>> GetUserAsync(string id);
+    Task<Result<User>> UpdateUserAsync(User domainUser);
 }

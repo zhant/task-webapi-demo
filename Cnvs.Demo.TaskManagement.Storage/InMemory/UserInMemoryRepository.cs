@@ -17,7 +17,12 @@ public class UserInMemoryRepository : IUserRepository
             : Result<User>.Success(user);
     }
 
-    public async Task<Result<User>> GetUserAsync(string userName)
+    public async Task<Result<User>> GetUserAsync(string id)
+    {
+        throw new NotImplementedException("This method is not implemented in-memory repository");
+    }
+
+    public async Task<Result<User>> GetUserByNameAsync(string userName)
     {
         _users.TryGetValue(userName, out var user);
         user ??= NullUser.Instance;

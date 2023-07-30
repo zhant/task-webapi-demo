@@ -1,61 +1,88 @@
 ﻿using AutoMapper;
-using Cnvs.Demo.TaskManagement.Dto;
 using Microsoft.AspNetCore.Mvc;
+using DtoUser = Cnvs.Demo.TaskManagement.Dto.User;
 
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("users")]
+[Route("task-management/users")]
 public class UsersController : ControllerBase
 {
-    private readonly ITaskEngine _taskEngine;
     private readonly IMapper _mapper;
+    private readonly ITaskEngine _taskEngine;
 
-    public UsersController(ITaskEngine taskEngine, IMapper mapper)
+    public UsersController(IMapper mapper, ITaskEngine taskEngine)
     {
-        _taskEngine = taskEngine;
         _mapper = mapper;
+        _taskEngine = taskEngine;
+    }
+        
+    [HttpGet]
+    public async Task<IActionResult> GetUsers()
+    {
+        var result = await _taskEngine.GetUsersAsync();
+        return result.IsSuccess
+            ? Ok(result.Value.Select(user => _mapper.Map<DtoUser>(user)))
+            : BadRequest(result.ErrorMessage);
     }
 
-    [HttpPost(Name = "AddUser")]
-    public async Task<IActionResult> AddUser(User user)
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetUser(string id)
     {
-        var domainUser = _mapper.Map<Domain.User>(user);
+        var result = await _taskEngine.GetUserAsync(id);
+        return result.IsSuccess 
+            ? Ok(_mapper.Map<DtoUser>(result.Value))
+            : BadRequest(result.ErrorMessage);
+    }
+
+    [HttpGet("name/{name}")]
+    public async Task<IActionResult> GetUserByName(string name)
+    {
+        var result = await _taskEngine.GetUserByNameAsync(name);
+        return result.IsSuccess 
+            ? Ok(_mapper.Map<DtoUser>(result.Value))
+            : BadRequest(result.ErrorMessage);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> AddUser(DtoUser userDto)
+    {
+        var domainUser = Domain.User.Create(userDto.Name);
+        domainUser.CreatedAt = DateTime.UtcNow;
         var result = await _taskEngine.CreateUserAsync(domainUser);
         return result.IsSuccess
-            ? CreatedAtRoute("GetUser", 
-                new { userName = result.Value.Name }, 
-                _mapper.Map<User>(result.Value))
+            ? CreatedAtAction(nameof(GetUser),
+                new { id = result.Value.Id }, 
+                _mapper.Map<DtoUser>(result.Value))
             : BadRequest(result.ErrorMessage);
     }
 
-    // Get user
-    [HttpGet("{userName}", Name = "GetUser")]
-    public async Task<IActionResult> GetUser(string userName)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> UpdateUser(string id, DtoUser userDto)
     {
-        var result = await _taskEngine.GetUserAsync(userName);
+        var domainUser = Domain.User.Create(userDto.Name);
+        domainUser.Id = id;
+        var result = await _taskEngine.UpdateUserAsync(domainUser);
         return result.IsSuccess 
-            ? Ok(_mapper.Map<User>(result.Value))
+            ? Ok(_mapper.Map<DtoUser>(result.Value))
             : BadRequest(result.ErrorMessage);
     }
 
-    // Delete user
-    [HttpDelete("delete/{userName}", Name = "DeleteUser")]
-    public async Task<IActionResult> DeleteUser(string userName)
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteUser(string id)
     {
-        var result = await _taskEngine.DeleteUserAsync(userName);
-        return result.IsSuccess 
-            ? Ok(result.Value)
+        var result = await _taskEngine.DeleteUserAsync(id);
+        return result.IsSuccess
+            ? NoContent()
             : BadRequest(result.ErrorMessage);
     }
 
-    // Get user tasks
-    [HttpGet("{userName}/tasks", Name = "GetUserTasks")]
-    public async Task<IActionResult> GetUserTasks(string userName)
+    [HttpGet("{id}/tasks")]
+    public async Task<IActionResult> GetUserTasks(string id)
     {
-        var result = await _taskEngine.GetUserTasksAsync(userName);
+        var result = await _taskEngine.GetUserTasksAsync(id);
         return result.IsSuccess 
-            ? Ok(result.Value)
+            ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
             : BadRequest(result.ErrorMessage);
     }
 }

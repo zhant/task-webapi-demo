@@ -45,7 +45,12 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<Result<User>> GetUserAsync(string userName)
+    public async Task<Result<User>> GetUserAsync(string id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<User>> GetUserByNameAsync(string userName)
     {
         try
         {
