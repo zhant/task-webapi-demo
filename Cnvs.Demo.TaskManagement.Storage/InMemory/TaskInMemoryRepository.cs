@@ -1,5 +1,6 @@
 ﻿using System.Collections.Concurrent;
 using System.Collections.Immutable;
+using System.ComponentModel;
 using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 using Task = System.Threading.Tasks.Task;
@@ -44,9 +45,25 @@ public class TaskInMemoryRepository : ITaskRepository
 
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState taskState)
     {
-        var tasks = _tasks.Values.Where(t => t.State == taskState).ToList();
+        if (!Enum.IsDefined(typeof(TaskState), taskState))
+        {
+            return await Task.FromResult(Result<IEnumerable<DomainTask>>.Failure("Invalid task state", Enumerable.Empty<DomainTask>()));
+        }
+        
+        if (taskState == TaskState.Undefined)
+        {
+            return await GetTasksAsync();
+        }
 
-        return Result<IEnumerable<DomainTask>>.Success(tasks);
+        var tasks = _tasks.Values.Where(t => t.State == taskState);
+
+        return await Task.FromResult(Result<IEnumerable<DomainTask>>.Success(tasks.ToList()));
+    }
+    
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync()
+    {
+        var tasks = _tasks.Values.AsEnumerable();
+        return await Task.FromResult(Result<IEnumerable<DomainTask>>.Success(tasks.ToList()));
     }
 
     public async Task<Result<DomainTask>> UpdateTaskAsync(DomainTask task)
@@ -79,7 +96,7 @@ public class TaskInMemoryRepository : ITaskRepository
     
         if (!taskExists || task is null)
         {
-            return Result<IEnumerable<User>>.Failure("Task not found", ImmutableList<User>.Empty);
+            return Result<IEnumerable<User>>.Failure("Task not found", Enumerable.Empty<User>());
         }
 
         var users = task.AssignedUsersHistory.ToList();
