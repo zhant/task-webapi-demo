@@ -88,7 +88,7 @@ public class UsersController : ControllerBase
         var user = await _taskEngine.GetUserAsync(id);
         if (user.Value is NullUser)
         {
-            return NotFound($"User not found:{user.ErrorMessage}");
+            return NotFound($"User not found: {id}");
         }
         
         var result = await _taskEngine.GetUserTasksByUserAsync(id);
@@ -100,10 +100,11 @@ public class UsersController : ControllerBase
     [HttpGet("{userName}/tasks")]
     public async Task<IActionResult> GetUserTasksByUserName(string userName)
     {
-        var userAsync = await _taskEngine.GetUserByNameAsync(userName);
-        if (NullUser.Instance.Equals(userAsync.Value))
+        var user = await _taskEngine.GetUserByNameAsync(userName);
+        
+        if (user.Value is NullUser)
         {
-            return BadRequest($"User not found:{userAsync.ErrorMessage}");
+            return NotFound($"User not found: {userName}");
         }
         
         var result = await _taskEngine.GetUserTasksByUserNameAsync(userName);
