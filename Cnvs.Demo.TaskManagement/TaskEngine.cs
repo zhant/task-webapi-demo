@@ -1,16 +1,39 @@
-﻿using Cnvs.Demo.TaskManagement.Domain;
+﻿using System.Collections.Immutable;
+using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 
 namespace Cnvs.Demo.TaskManagement;
 
 public class TaskEngine : ITaskEngine
 {
+    // Could be configurable with IOptions, but this is out of the scope for this demo.
+    private const int ChangesBetweenUsers = 3;
     private readonly ITaskRepository _taskRepository;
     private readonly IUserRepository _userRepository;
-    private readonly List<User> _users;
-    private readonly List<DomainTask> _tasks;
     private readonly ILogger<TaskEngine> _logger;
     private readonly IUserRandomizer _userRandomizer;
+
+    private IEnumerable<User> Users
+    {
+        get
+        {
+            var result = _userRepository.GetUsers();
+            return result.IsSuccess 
+                ? result.Value.ToList() 
+                : throw new ApplicationException(result.ErrorMessage);
+        }
+    }
+
+    private List<DomainTask> Tasks
+    {
+        get
+        {
+            var result = _taskRepository.GetTasks();
+            return result.IsSuccess 
+                ? result.Value.ToList() 
+                : throw new ApplicationException(result.ErrorMessage);
+        }
+    }
 
     public TaskEngine(ITaskRepository taskRepository, IUserRepository userRepository, ILogger<TaskEngine> logger, IUserRandomizer userRandomizer)
     {
@@ -18,8 +41,6 @@ public class TaskEngine : ITaskEngine
         _userRepository = userRepository;
         _logger = logger;
         _userRandomizer = userRandomizer;
-        _tasks = new List<DomainTask>();
-        _users = new List<User>();
     }
     
     public async System.Threading.Tasks.Task InitializeAsync()
@@ -37,14 +58,11 @@ public class TaskEngine : ITaskEngine
             _logger.LogCritical("Failed to get users: {Error}", usersResult.ErrorMessage);
             return;
         }
-        
-        _tasks.AddRange(tasksResult.Value);
-        _users.AddRange(usersResult.Value);
     }
 
     public IEnumerable<DomainTask> GetTasks()
     {
-        return _tasks;
+        return Tasks;
     }
 
     public void RotateTask(DomainTask task)
@@ -56,8 +74,9 @@ public class TaskEngine : ITaskEngine
 
         User newUser;
         var usersToExclude = task.AssignedUsersHistory;
-        if (task.AssignedUser is not null)
+        if (!NullUser.Instance.Equals(task.AssignedUser))
         {
+            usersToExclude.Add(task.AssignedUser);
             usersToExclude = usersToExclude.Append(task.AssignedUser).ToList();
         }
         
@@ -79,7 +98,7 @@ public class TaskEngine : ITaskEngine
         
         task.AssignedUsersHistory.Add(newUser);
         task.TransferCount++;
-        if (task.TransferCount < 3)
+        if (task.TransferCount < ChangesBetweenUsers)
         {
             return;
         }
@@ -89,12 +108,12 @@ public class TaskEngine : ITaskEngine
 
     private User GetRandomUser()
     {
-        return _userRandomizer.GetRandomUser(_users);
+        return _userRandomizer.GetRandomUser(Users);
     }
 
     private User GetRandomUser(IEnumerable<User> usersToExclude)
     {
-        return _userRandomizer.GetRandomUser(_users.Except(usersToExclude, new UserEqualityComparer()));
+        return _userRandomizer.GetRandomUser(Users.Except(usersToExclude, new UserEqualityComparer()));
     }
     
     public async Task<Result<DomainTask>> CreateTaskAsync(string taskDescription)
@@ -108,7 +127,6 @@ public class TaskEngine : ITaskEngine
         var task = Domain.Task.NewTask(taskDescription);
         task.AssignedUser = assignedUser; 
         
-        _tasks.Add(task);
         var taskResult = await _taskRepository.AddTask(task);
         return taskResult;
     }
@@ -124,15 +142,17 @@ public class TaskEngine : ITaskEngine
         return result;
     }
 
-    public Result<IEnumerable<DomainTask>> GetTasks(TaskState[] allowedStates)
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasks(TaskState[] allowedStates)
     {
         // NB in case of > 1 pods always get tasks from DB
-        var tasks = _tasks.Where(x => allowedStates.Contains(x.State));
-        return Result<IEnumerable<DomainTask>>.Success(tasks);
+        var result = await _taskRepository.GetTasksAsync(allowedStates);
+        return result.IsSuccess
+            ? Result<IEnumerable<DomainTask>>.Success(result.Value)
+            : Result<IEnumerable<DomainTask>>.Failure(result.ErrorMessage, Enumerable.Empty<DomainTask>());
     }
 
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState state)
-    {   
+    {
         var result = await _taskRepository.GetTasksAsync(state);
         if (result.IsFailure)
         {
@@ -145,8 +165,8 @@ public class TaskEngine : ITaskEngine
     public Result<IEnumerable<DomainTask>> GetTasks(TaskState state)
     {
         var r = state != TaskState.Undefined
-            ? _tasks.Where(t => t.State == state)
-            : _tasks;
+            ? Tasks.Where(t => t.State == state)
+            : Tasks;
         return Result<IEnumerable<DomainTask>>.Success(r);
     }
 
@@ -164,7 +184,7 @@ public class TaskEngine : ITaskEngine
 
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync()
     {
-        var result = _taskRepository.GetTasks();
+        var result = await _taskRepository.GetTasksAsync();
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get tasks: {Error}", result.ErrorMessage);
@@ -216,16 +236,15 @@ public class TaskEngine : ITaskEngine
         }
         
         var user = User.Create(userName);
-        _users.Add(user);
-        var addUser = await _userRepository.AddUser(user);
-        if (addUser.IsFailure)
+        var addedUser = await _userRepository.AddUser(user);
+        if (addedUser.IsFailure)
         {
-            var message = $"Failed to add user to repository: {userName}: {addUser.ErrorMessage}";
+            var message = $"Failed to add user to repository: {userName}: {addedUser.ErrorMessage}";
             _logger.LogError(message);
             return Result<User>.Failure(message, NullUser.Instance);
         }
         
-        return Result<User>.Success(addUser.Value);
+        return Result<User>.Success(addedUser.Value);
     }
     
     public async Task<Result<User>> GetUserByNameAsync(string userName)
@@ -241,7 +260,11 @@ public class TaskEngine : ITaskEngine
     
     public Result<IEnumerable<User>> GetUsers()
     {
-        return Result<IEnumerable<User>>.Success(_users);
+        var result = _userRepository.GetUsers();
+        
+        return result.IsSuccess 
+            ? Result<IEnumerable<User>>.Success(result.Value)
+            : Result<IEnumerable<User>>.Failure(result.ErrorMessage, Enumerable.Empty<User>());
     }
 
     public async Task<Result<User>> GetUserAsync(Guid id)

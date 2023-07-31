@@ -6,7 +6,6 @@ namespace Cnvs.Demo.TaskManagement;
 public interface ITaskEngine
 {
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState state = TaskState.Undefined);
-    Result<IEnumerable<Domain.Task>> GetTasks(TaskState state);
 
     Task<Result<Domain.Task>> GetTaskAsync(Guid id);
     
@@ -26,7 +25,7 @@ public interface ITaskEngine
     void RotateTask(Domain.Task task);
     IEnumerable<Domain.Task> GetTasks();
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
-    Result<IEnumerable<Domain.Task>> GetTasks(TaskState[] allowedStates);
+    Task<Result<IEnumerable<Domain.Task>>> GetTasks(TaskState[] allowedStates);
     Result<IEnumerable<User>> GetUsers();
     Task<Result<User>> GetUserAsync(Guid id);
     Task<Result<User>> UpdateUserAsync(User domainUser);
