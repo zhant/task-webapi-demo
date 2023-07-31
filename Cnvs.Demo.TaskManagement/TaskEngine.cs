@@ -17,7 +17,7 @@ public class TaskEngine : ITaskEngine
         IUserRepository userRepository,
         ILogger<TaskEngine> logger,
         IUserRandomizer userRandomizer,
-        IOptionsSnapshot<TaskEngineOptions> options)
+        IOptions<TaskEngineOptions> options)
     {
         _taskRepository = taskRepository;
         _userRepository = userRepository;

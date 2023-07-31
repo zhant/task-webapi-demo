@@ -16,7 +16,7 @@ public class TaskRotationService : BackgroundService
 
     public TaskRotationService(ITaskEngine taskEngine,
         ILogger<TaskRotationService> logger,
-        IOptionsSnapshot<TaskEngineOptions> options)
+        IOptions<TaskEngineOptions> options)
     {
         _taskEngine = taskEngine;
         _logger = logger;
