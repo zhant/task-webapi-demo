@@ -16,7 +16,12 @@ public class Task
 
     public static Task NewTask(string taskDescription)
     {
-        return new Task(taskDescription) { State = TaskState.Waiting, CreatedAt = DateTime.UtcNow };
+        return new Task(taskDescription)
+        {
+            State = TaskState.Waiting,
+            CreatedAt = DateTime.UtcNow,
+            AssignedUser = NullUser.Instance
+        };
     }
 
     /// <summary>
@@ -62,8 +67,7 @@ public class Task
 
     public void StartWithUser(User newUser)
     {
-        AssignedUser = newUser;
-        if (AssignedUser is NullUser)
+        if (newUser is NullUser)
         {
             throw new InvalidOperationException("Cannot start a task with a null user");
         }
@@ -73,6 +77,7 @@ public class Task
             throw new InvalidOperationException("Cannot start a task that is not in the waiting state");
         }
 
+        AssignedUser = newUser;
         State = TaskState.InProgress;
         StartedAt ??= DateTime.UtcNow;
         SuspendedAt = null;
