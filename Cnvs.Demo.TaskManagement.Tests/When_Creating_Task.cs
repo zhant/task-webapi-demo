@@ -21,14 +21,17 @@ public class When_Creating_Task
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
         
         A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
-            .Returns(Result<Domain.Task>.Failure("Database error", NullTask.Instance));
-        
+            .Returns(Result<Domain.Task>.Failure("Storage error", NullTask.Instance));
+        var testUser = User.Create("TestUser");
+        A.CallTo(() => fakeUserRepo.GetUsers())
+            .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
+
         // Act
         var result = await taskEngine.CreateTaskAsync(TaskDescription);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be("Database error");
+        result.ErrorMessage.Should().Be("Storage error");
     }
 
     [Fact]
@@ -41,6 +44,9 @@ public class When_Creating_Task
         var userRandomizer = A.Fake<IUserRandomizer>();
         var testTask = Domain.Task.NewTask(TaskDescription);
 
+        var testUser = User.Create("TestUser");
+        A.CallTo(() => fakeUserRepo.GetUsers())
+            .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));
         A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
@@ -66,6 +72,8 @@ public class When_Creating_Task
         var userRandomizer = A.Fake<IUserRandomizer>();
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
+        A.CallTo(() => fakeUserRepo.GetUsers())
+            .Returns(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));
         A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(NullUser.Instance);
 
@@ -91,6 +99,8 @@ public class When_Creating_Task
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
         var testUser = User.Create("TestUser");
+        A.CallTo(() => fakeUserRepo.GetUsers())
+            .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(testUser);
         
@@ -132,6 +142,9 @@ public class When_Creating_Task
         var fakeUserRepo = A.Fake<IUserRepository>();
         var fakeLogger = A.Fake<ILogger<TaskEngine>>();
         var userRandomizer = A.Fake<IUserRandomizer>();
+        var testUser = User.Create("TestUser");
+        A.CallTo(() => fakeUserRepo.GetUsers())
+            .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
         const string validDescription = "Valid description";
 
