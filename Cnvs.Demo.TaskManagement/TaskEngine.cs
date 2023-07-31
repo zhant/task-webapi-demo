@@ -92,11 +92,14 @@ public class TaskEngine : ITaskEngine
             throw new ArgumentException("Description cannot be empty");
         }
 
-        var assignedUser = GetRandomUser();
+        var userToBeAssigned = GetRandomUser();
         var task = Domain.Task.NewTask(taskDescription);
-        task.AssignedUser = assignedUser; 
-        
-        var taskResult = await _taskRepository.AddTask(task);
+        if (userToBeAssigned is not NullUser)
+        {
+            task.StartWithUser(userToBeAssigned);
+        }
+
+        var taskResult = await _taskRepository.AddTaskAsync(task);
         return taskResult;
     }
 
@@ -253,6 +256,18 @@ public class TaskEngine : ITaskEngine
     public async Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id)
     {
         return await _taskRepository.GetTaskUsersAsync(id);
+    }
+
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksByDescriptionAsync(string description)
+    {
+        var result = await _taskRepository.GetTasksByDescriptionAsync(description);
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get tasks by description {Description}: {Error}", description, result.ErrorMessage);
+            return Result<IEnumerable<DomainTask>>.Failure(result.ErrorMessage, Enumerable.Empty<DomainTask>());
+        }
+
+        return Result<IEnumerable<DomainTask>>.Success(result.Value);
     }
 
     public async Task<Result<IEnumerable<User>>> GetUsersAsync()
