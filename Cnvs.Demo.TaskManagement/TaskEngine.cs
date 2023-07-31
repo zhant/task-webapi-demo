@@ -13,28 +13,6 @@ public class TaskEngine : ITaskEngine
     private readonly ILogger<TaskEngine> _logger;
     private readonly IUserRandomizer _userRandomizer;
 
-    private IEnumerable<User> Users
-    {
-        get
-        {
-            var result = _userRepository.GetUsers();
-            return result.IsSuccess 
-                ? result.Value.ToList() 
-                : throw new ApplicationException(result.ErrorMessage);
-        }
-    }
-
-    private List<DomainTask> Tasks
-    {
-        get
-        {
-            var result = _taskRepository.GetTasks();
-            return result.IsSuccess 
-                ? result.Value.ToList() 
-                : throw new ApplicationException(result.ErrorMessage);
-        }
-    }
-
     public TaskEngine(ITaskRepository taskRepository,
         IUserRepository userRepository,
         ILogger<TaskEngine> logger,
@@ -48,11 +26,6 @@ public class TaskEngine : ITaskEngine
         _changesBetweenUsers = options.Value.ChangesBetweenUsers;
     }
     
-    public IEnumerable<DomainTask> GetTasks()
-    {
-        return Tasks;
-    }
-
     public void RotateTask(DomainTask task)
     {
         if (task.State == TaskState.Completed)
@@ -90,12 +63,26 @@ public class TaskEngine : ITaskEngine
 
     private User GetRandomUser()
     {
-        return _userRandomizer.GetRandomUser(Users);
+        var result = GetUsers();
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get users: {Error}", result.ErrorMessage);
+            return NullUser.Instance;
+        }
+        
+        return _userRandomizer.GetRandomUser(result.Value);
     }
 
     private User GetRandomUser(IEnumerable<User> usersToExclude)
     {
-        return _userRandomizer.GetRandomUser(Users.Except(usersToExclude, new UserEqualityComparer()));
+        var result = GetUsers();
+        if (result.IsFailure)
+        {
+            _logger.LogError("Failed to get users: {Error}", result.ErrorMessage);
+            return NullUser.Instance;
+        }
+        
+        return _userRandomizer.GetRandomUser(result.Value.Except(usersToExclude, new UserEqualityComparer()));
     }
     
     public async Task<Result<DomainTask>> CreateTaskAsync(string taskDescription)
@@ -142,14 +129,6 @@ public class TaskEngine : ITaskEngine
         }
         
         return result;
-    }
-
-    public Result<IEnumerable<DomainTask>> GetTasks(TaskState state)
-    {
-        var r = state != TaskState.Undefined
-            ? Tasks.Where(t => t.State == state)
-            : Tasks;
-        return Result<IEnumerable<DomainTask>>.Success(r);
     }
 
     public async Task<Result<DomainTask>> GetTaskAsync(Guid taskId)

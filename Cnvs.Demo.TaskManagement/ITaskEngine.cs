@@ -23,7 +23,6 @@ public interface ITaskEngine
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserNameAsync(string name);
 
     void RotateTask(Domain.Task task);
-    IEnumerable<Domain.Task> GetTasks();
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
     Task<Result<IEnumerable<Domain.Task>>> GetTasks(TaskState[] allowedStates);
     Result<IEnumerable<User>> GetUsers();
