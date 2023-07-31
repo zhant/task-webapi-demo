@@ -85,10 +85,10 @@ public class UsersController : ControllerBase
     [HttpGet("{id:guid}/tasks")]
     public async Task<IActionResult> GetUserTasks(Guid id)
     {
-        var userAsync = await _taskEngine.GetUserAsync(id);
-        if (NullUser.Instance.Equals(userAsync.Value))
+        var user = await _taskEngine.GetUserAsync(id);
+        if (user.Value is NullUser)
         {
-            return BadRequest($"User not found:{userAsync.ErrorMessage}");
+            return NotFound($"User not found:{user.ErrorMessage}");
         }
         
         var result = await _taskEngine.GetUserTasksByUserAsync(id);
