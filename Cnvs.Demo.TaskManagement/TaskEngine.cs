@@ -1,13 +1,13 @@
-﻿using System.Collections.Immutable;
+﻿using Cnvs.Demo.TaskManagement.Configuration;
 using Cnvs.Demo.TaskManagement.Domain;
+using Microsoft.Extensions.Options;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 
 namespace Cnvs.Demo.TaskManagement;
 
 public class TaskEngine : ITaskEngine
 {
-    // Could be configurable with IOptions, but this is out of the scope for this demo.
-    private const int ChangesBetweenUsers = 3;
+    private readonly int _changesBetweenUsers;
     private readonly ITaskRepository _taskRepository;
     private readonly IUserRepository _userRepository;
     private readonly ILogger<TaskEngine> _logger;
@@ -35,31 +35,19 @@ public class TaskEngine : ITaskEngine
         }
     }
 
-    public TaskEngine(ITaskRepository taskRepository, IUserRepository userRepository, ILogger<TaskEngine> logger, IUserRandomizer userRandomizer)
+    public TaskEngine(ITaskRepository taskRepository,
+        IUserRepository userRepository,
+        ILogger<TaskEngine> logger,
+        IUserRandomizer userRandomizer,
+        IOptionsSnapshot<TaskEngineOptions> options)
     {
         _taskRepository = taskRepository;
         _userRepository = userRepository;
         _logger = logger;
         _userRandomizer = userRandomizer;
+        _changesBetweenUsers = options.Value.ChangesBetweenUsers;
     }
     
-    public async System.Threading.Tasks.Task InitializeAsync()
-    {
-        var usersResult = _userRepository.GetUsers();
-        if (usersResult.IsFailure)
-        {
-            _logger.LogCritical("Failed to get users: {Error}", usersResult.ErrorMessage);
-            return;
-        }
-        
-        var tasksResult = _taskRepository.GetTasks();
-        if (tasksResult.IsFailure)
-        {
-            _logger.LogCritical("Failed to get users: {Error}", usersResult.ErrorMessage);
-            return;
-        }
-    }
-
     public IEnumerable<DomainTask> GetTasks()
     {
         return Tasks;
@@ -74,11 +62,6 @@ public class TaskEngine : ITaskEngine
 
         User newUser;
         var usersToExclude = task.AssignedUsersHistory;
-        if (!NullUser.Instance.Equals(task.AssignedUser))
-        {
-            usersToExclude.Add(task.AssignedUser);
-            usersToExclude = usersToExclude.Append(task.AssignedUser).ToList();
-        }
         
         do
         {
@@ -89,16 +72,15 @@ public class TaskEngine : ITaskEngine
             }
         } while (usersToExclude.Contains(newUser));
 
-        task.StartWithUser(newUser);
         if (newUser is NullUser)
         {
             task.Suspend();
             return;
         }
         
-        task.AssignedUsersHistory.Add(newUser);
-        task.TransferCount++;
-        if (task.TransferCount < ChangesBetweenUsers)
+        task.StartWithUser(newUser);
+        
+        if (task.TransferCount < _changesBetweenUsers)
         {
             return;
         }

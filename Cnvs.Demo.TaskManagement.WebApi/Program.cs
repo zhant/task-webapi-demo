@@ -1,5 +1,6 @@
 using AutoMapper;
 using Cnvs.Demo.TaskManagement;
+using Cnvs.Demo.TaskManagement.Configuration;
 using Cnvs.Demo.TaskManagement.Storage.InMemory;
 using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
@@ -10,6 +11,8 @@ using TaskState = Cnvs.Demo.TaskManagement.Domain.TaskState;
 using User = Cnvs.Demo.TaskManagement.Domain.User;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.Configure<TaskEngineOptions>(builder.Configuration.GetSection("TaskEngine"));
 
 builder.Services.AddTransient<ITaskEngine, TaskEngine>();
 builder.Services.AddSingleton<IUserRandomizer, UserRandomizer>();

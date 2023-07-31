@@ -1,4 +1,6 @@
+using Cnvs.Demo.TaskManagement.Configuration;
 using Cnvs.Demo.TaskManagement.Domain;
+using Microsoft.Extensions.Options;
 using DomainTask = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement;
@@ -6,28 +8,31 @@ namespace Cnvs.Demo.TaskManagement;
 public class TaskRotationService : BackgroundService
 {
     // Could be configurable with IOptions, but this is out of the scope for this demo.
-    private const int RotationTimeMinutes = 2;
+    private readonly int _rotationTimeMinutes;
     
     private readonly ILogger<TaskRotationService> _logger;
     private readonly ITaskEngine _taskEngine;
     private Timer? _timer;
 
-    public TaskRotationService(ITaskEngine taskEngine, ILogger<TaskRotationService> logger)
+    public TaskRotationService(ITaskEngine taskEngine,
+        ILogger<TaskRotationService> logger,
+        IOptionsSnapshot<TaskEngineOptions> options)
     {
         _taskEngine = taskEngine;
         _logger = logger;
+        _rotationTimeMinutes = options.Value.RotationTimeMinutes;
     }
 
     protected override async DomainTask ExecuteAsync(CancellationToken stoppingToken)
     {
         _logger.LogInformation("Task rotation service is starting");
 
-        _timer = new Timer(RotateTasks, null, TimeSpan.Zero, TimeSpan.FromMinutes(RotationTimeMinutes));
+        _timer = new Timer(RotateTasks, null, TimeSpan.Zero, TimeSpan.FromMinutes(_rotationTimeMinutes));
         stoppingToken.Register(() => _timer.Dispose());
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            await DomainTask.Delay(TimeSpan.FromMinutes(RotationTimeMinutes), stoppingToken);
+            await DomainTask.Delay(TimeSpan.FromMinutes(_rotationTimeMinutes), stoppingToken);
         }
     }
 
