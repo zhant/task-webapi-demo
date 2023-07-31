@@ -50,7 +50,6 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> AddUser(UserToCreate userDto)
     {
         var domainUser = Domain.User.Create(userDto.Name);
-        domainUser.CreatedAt = DateTime.UtcNow;
         var result = await _taskEngine.CreateUserAsync(domainUser);
         return result.IsSuccess
             ? CreatedAtAction(nameof(GetUser),

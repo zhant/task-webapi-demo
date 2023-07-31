@@ -195,7 +195,7 @@ public class TaskEngine : ITaskEngine
             return Result<User>.Failure(message, NullUser.Instance);
         }        
         
-        if (result.IsSuccess && !NullUser.Instance.Equals(result.Value))
+        if (result is { IsSuccess: true, Value: not NullUser })
         {
             return Result<User>.Failure($"User with name {userName} already exists", NullUser.Instance);
         }

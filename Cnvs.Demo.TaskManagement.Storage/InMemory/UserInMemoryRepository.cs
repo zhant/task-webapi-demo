@@ -27,9 +27,7 @@ public class UserInMemoryRepository : IUserRepository
     {
         var getValue = _users.TryGetValue(userName, out var user);
         user ??= NullUser.Instance;
-        return Task.FromResult(getValue 
-            ? Result<User>.Success(user) 
-            : Result<User>.Failure("User not found", user));
+        return Task.FromResult(Result<User>.Success(user));
     }
 
     public Task<Result<IEnumerable<User>>> GetUsersAsync()
