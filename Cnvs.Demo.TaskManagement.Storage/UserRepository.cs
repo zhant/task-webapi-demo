@@ -58,11 +58,11 @@ public class UserRepository : IUserRepository
             // TODO: Implement this Reading from the database
             var nullUser = NullUser.Instance;
             // _logger.LogInformation("Found user: {userName}", userName);
-            return await System.Threading.Tasks.Task.FromResult(Result<User>.Success(nullUser));
+            return await Task.FromResult(Result<User>.Success(nullUser));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while retrieving user: {userName}", userName);
+            _logger.LogError(ex, "Error occurred while retrieving user: {UserName}", userName);
             throw;
         }
     }
@@ -74,7 +74,7 @@ public class UserRepository : IUserRepository
             _logger.LogInformation("Getting all users");
             
             // TODO: Implement this Reading from the database
-            var users = ImmutableList<User>.Empty;
+            var users = Enumerable.Empty<User>();
 
             _logger.LogInformation("Successfully retrieved all users");
             return Result<IEnumerable<User>>.Success(users);
