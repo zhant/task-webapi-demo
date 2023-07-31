@@ -32,7 +32,8 @@ public class TaskInMemoryRepository : ITaskRepository
     
     public async Task<Result<DomainTask>> AddTaskAsync(DomainTask task)
     {
-        throw new NotImplementedException();
+        _tasks[task.Id] = task;
+        return await Task.FromResult(Result<DomainTask>.Success(task));
     }
 
     public async Task<Result<DomainTask>> GetTaskAsync(Guid taskId)
