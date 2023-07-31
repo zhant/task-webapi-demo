@@ -2,6 +2,7 @@
 using System.Collections.Immutable;
 using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Storage.InMemory;
 
@@ -17,9 +18,10 @@ public class UserInMemoryRepository : IUserRepository
             : Result<User>.Success(user);
     }
 
-    public async Task<Result<User>> GetUserAsync(string id)
+    public async Task<Result<User>> GetUserAsync(Guid id)
     {
-        throw new NotImplementedException("This method is not implemented in-memory repository");
+        var value = _users.ToArray().FirstOrDefault(x => x.Value.Id == id.ToString()).Value ?? NullUser.Instance;
+        return await Task.FromResult(Result<User>.Success(value));
     }
 
     public async Task<Result<User>> GetUserByNameAsync(string userName)
@@ -32,10 +34,7 @@ public class UserInMemoryRepository : IUserRepository
     public Result<IEnumerable<User>> GetUsers()
     {
         var users = _users.Values.ToList();
-
-        return users.Any() 
-            ? Result<IEnumerable<User>>.Success(users) 
-            : Result<IEnumerable<User>>.Failure("No users found", ImmutableList<User>.Empty);
+        return Result<IEnumerable<User>>.Success(users);
     }
 
     public async Task<Result<string>> DeleteUserAsync(string userName)
