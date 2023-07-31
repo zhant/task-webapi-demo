@@ -10,7 +10,7 @@ public class User
     public string Name { get; set; } = null!;
     
     public string Id { get; set; } = Guid.NewGuid().ToString();
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
     public DateTime? DeletedAt { get; set; }
     public IEnumerable<Task> Tasks { get; set; } = new List<Task>();
 
