@@ -45,7 +45,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<Result<User>> GetUserAsync(string id)
+    public async Task<Result<User>> GetUserAsync(Guid id)
     {
         throw new NotImplementedException();
     }
