@@ -21,7 +21,7 @@ public class When_Creating_User
         var userRandomizer = A.Fake<IUserRandomizer>();
 
         A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
-            .Returns(Result<User>.Failure("Database error", NullUser.Instance));
+            .Returns(Result<User>.Failure("Storage error", NullUser.Instance));
 
         var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
 
@@ -30,7 +30,7 @@ public class When_Creating_User
 
         // Assert
         result.IsSuccess.Should().BeFalse();
-        result.ErrorMessage.Should().Be($"Failed to get user {UserName}: Database error");
+        result.ErrorMessage.Should().Be($"Failed to get user {UserName}: Storage error");
     }
 
     [Fact]
