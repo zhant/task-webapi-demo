@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("taskToCreate-management/tasks")]
+[Route("task-management/tasks")]
 public class TasksController : ControllerBase
 {
     private readonly ITaskEngine _taskEngine;
