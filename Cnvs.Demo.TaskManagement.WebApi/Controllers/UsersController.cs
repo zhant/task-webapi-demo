@@ -35,10 +35,10 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("name/{name}")]
-    public async Task<IActionResult> GetUserByName(string name)
+    [HttpGet("userName")]
+    public async Task<IActionResult> GetUserByName([FromQuery] string userName)
     {
-        var result = await _taskEngine.GetUserByNameAsync(name);
+        var result = await _taskEngine.GetUserByNameAsync(userName);
         return result.IsSuccess 
             ? Ok(_mapper.Map<DtoUser>(result.Value))
             : BadRequest(result.ErrorMessage);
@@ -77,19 +77,19 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("{id}/tasks")]
-    public async Task<IActionResult> GetUserTasks(string id)
+    [HttpGet("{id:guid}/tasks")]
+    public async Task<IActionResult> GetUserTasks(Guid id)
     {
-        var result = await _taskEngine.GetUserTasksByUserNameAsync(id);
+        var result = await _taskEngine.GetUserTasksByUserAsync(id);
         return result.IsSuccess 
             ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
             : BadRequest(result.ErrorMessage);
     }
     
     [HttpGet("{userName}/tasks")]
-    public async Task<IActionResult> GetUserTasksByUserName(string name)
+    public async Task<IActionResult> GetUserTasksByUserName(string userName)
     {
-        var result = await _taskEngine.GetUserTasksByUserAsync(name);
+        var result = await _taskEngine.GetUserTasksByUserNameAsync(userName);
         return result.IsSuccess 
             ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
             : BadRequest(result.ErrorMessage);
