@@ -13,8 +13,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<ITaskEngine, TaskEngine>();
 builder.Services.AddSingleton<IUserRandomizer, UserRandomizer>();
-builder.Services.AddTransient<ITaskRepository, TaskInMemoryRepository>();
-builder.Services.AddTransient<IUserRepository, UserInMemoryRepository>();
+builder.Services.AddSingleton<ITaskRepository, TaskInMemoryRepository>();
+builder.Services.AddSingleton<IUserRepository, UserInMemoryRepository>();
 
 var config = new MapperConfiguration(cfg =>
 {
