@@ -41,6 +41,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
+builder.Services.AddHostedService<TaskRotationService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
