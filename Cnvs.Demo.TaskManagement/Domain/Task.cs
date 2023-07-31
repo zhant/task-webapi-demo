@@ -63,7 +63,12 @@ public class Task
     public void StartWithUser(User newUser)
     {
         AssignedUser = newUser;
-        if (AssignedUser is null && State != TaskState.Waiting)
+        if (AssignedUser is NullUser)
+        {
+            throw new InvalidOperationException("Cannot start a task with a null user");
+        }
+        
+        if (State != TaskState.Waiting)
         {
             throw new InvalidOperationException("Cannot start a task that is not in the waiting state");
         }
@@ -71,6 +76,8 @@ public class Task
         State = TaskState.InProgress;
         StartedAt ??= DateTime.UtcNow;
         SuspendedAt = null;
+        AssignedUsersHistory.Add(newUser);
+        TransferCount++;
     }
     
     public void Delete()
