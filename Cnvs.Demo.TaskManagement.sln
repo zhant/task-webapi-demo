@@ -12,6 +12,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cnvs.Demo.TaskManagement.St
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cnvs.Demo.TaskManagement.WebApi.Tests", "Cnvs.Demo.TaskManagement.WebApi.Tests\Cnvs.Demo.TaskManagement.WebApi.Tests.csproj", "{3A43B02D-BF26-49FA-A059-5051C32C9E7A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cnvs.Demo.TaskManagement.WebApi.Curl", "Cnvs.Demo.TaskManagement.WebApi.Curl", "{04DED9BC-AC1B-4C9F-84F3-149C00ACDA41}"
+	ProjectSection(SolutionItems) = preProject
+		Cnvs.Demo.TaskManagement.WebApi.Curl\CreateXTasks.ps1 = Cnvs.Demo.TaskManagement.WebApi.Curl\CreateXTasks.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
