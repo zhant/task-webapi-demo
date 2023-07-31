@@ -28,7 +28,7 @@ public interface ITaskEngine
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
     Result<IEnumerable<Domain.Task>> GetTasks(TaskState[] allowedStates);
     Result<IEnumerable<User>> GetUsers();
-    Task<Result<User>> GetUserAsync(string id);
+    Task<Result<User>> GetUserAsync(Guid id);
     Task<Result<User>> UpdateUserAsync(User domainUser);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserAsync(Guid name);
     Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id);

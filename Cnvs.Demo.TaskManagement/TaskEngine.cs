@@ -244,7 +244,7 @@ public class TaskEngine : ITaskEngine
         return Result<IEnumerable<User>>.Success(_users);
     }
 
-    public async Task<Result<User>> GetUserAsync(string id)
+    public async Task<Result<User>> GetUserAsync(Guid id)
     {
         var result = await _userRepository.GetUserAsync(id);
         if (result.IsFailure)
