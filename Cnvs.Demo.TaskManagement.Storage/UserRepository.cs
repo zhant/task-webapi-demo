@@ -1,5 +1,4 @@
-﻿using System.Collections.Immutable;
-using Cnvs.Demo.TaskManagement.Domain;
+﻿using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.Extensions.Logging;
 using Task = System.Threading.Tasks.Task;
 
@@ -33,14 +32,14 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            _logger.LogInformation("Adding new user: {userName}", user.Name);
+            _logger.LogInformation("Adding new user: {UserName}", user.Name);
             // TODO: Implement this Writing to the database
             // _logger.LogInformation("Successfully added user: {userName}", user.Name);
             return await Task.FromResult(Result<User>.Success(user));
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while adding user: {userName}", user.Name);
+            _logger.LogError(ex, "Error occurred while adding user: {UserName}", user.Name);
             throw;
         }
     }
@@ -54,7 +53,7 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            _logger.LogInformation("Searching for user: {userName}", userName);
+            _logger.LogInformation("Searching for user: {UserName}", userName);
             // TODO: Implement this Reading from the database
             var nullUser = NullUser.Instance;
             // _logger.LogInformation("Found user: {userName}", userName);
@@ -90,13 +89,13 @@ public class UserRepository : IUserRepository
     {
         try
         {
-            _logger.LogInformation("Deleting user: {userName}", userName);
+            _logger.LogInformation("Deleting user: {UserName}", userName);
             throw new NotImplementedException();
             // _logger.LogInformation("Successfully deleted user: {userName}", userName);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while deleting user: {userName}", userName);
+            _logger.LogError(ex, "Error occurred while deleting user: {UserName}", userName);
             throw;
         }
     }

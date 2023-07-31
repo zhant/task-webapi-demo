@@ -1,6 +1,4 @@
 ﻿using System.Collections.Concurrent;
-using System.Collections.Immutable;
-using System.ComponentModel;
 using Cnvs.Demo.TaskManagement.Domain;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 using Task = System.Threading.Tasks.Task;
@@ -74,7 +72,7 @@ public class TaskInMemoryRepository : ITaskRepository
 
     public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByNameAsync(string userName)
     {
-        var tasks = _tasks.Values.Where(t => t.AssignedUser?.Name == userName).ToList();
+        var tasks = _tasks.Values.Where(t => t.AssignedUser.Name == userName).ToList();
         return Result<IEnumerable<DomainTask>>.Success(tasks);
     }
 
@@ -86,7 +84,7 @@ public class TaskInMemoryRepository : ITaskRepository
 
     public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(Guid id)
     {
-        var tasks = _tasks.Values.Where(t => t.AssignedUser?.Id == id.ToString()).ToList();
+        var tasks = _tasks.Values.Where(t => t.AssignedUser.Id == id.ToString()).ToList();
         return Result<IEnumerable<DomainTask>>.Success(tasks);
     }
 
@@ -100,9 +98,9 @@ public class TaskInMemoryRepository : ITaskRepository
         }
 
         var users = task.AssignedUsersHistory.ToList();
-        if (task.AssignedUser != null && !task.AssignedUser.Equals(NullUser.Instance))
+        if (task.AssignedUser is not NullUser)
         {
-            users.Add(task.AssignedUser!);
+            users.Add(task.AssignedUser);
         }
         
         return await Task.FromResult(Result<IEnumerable<User>>.Success(users));
