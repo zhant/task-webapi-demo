@@ -35,8 +35,8 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("userName")]
-    public async Task<IActionResult> GetUserByName([FromQuery] string userName)
+    [HttpGet("userName/{userName}")]
+    public async Task<IActionResult> GetUserByName(string userName)
     {
         var result = await _taskEngine.GetUserByNameAsync(userName);
         return result.IsSuccess 
