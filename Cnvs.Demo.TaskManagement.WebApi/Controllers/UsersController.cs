@@ -57,7 +57,9 @@ public class UsersController : ControllerBase
             ? CreatedAtAction(nameof(GetUser),
                 new { id = result.Value.Id }, 
                 _mapper.Map<DtoUser>(result.Value))
-            : BadRequest(result.ErrorMessage);
+            : result.Value is not NullUser
+                ? Conflict(result.ErrorMessage)
+                : BadRequest(result.ErrorMessage);
     }
 
     [HttpPut("{id}")]
