@@ -260,7 +260,7 @@ public class TaskEngine : ITaskEngine
         throw new NotImplementedException();
     }
 
-    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByUserAsync(string id)
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByUserAsync(Guid id)
     {
         var result = await _taskRepository.GetUserTasksAsync(id);
         return result;

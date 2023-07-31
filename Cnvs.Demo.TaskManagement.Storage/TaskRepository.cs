@@ -72,7 +72,7 @@ public class TaskRepository : ITaskRepository
         return Result<IEnumerable<Domain.Task>>.Success(tasks);
     }
 
-    public async Task<Result<IEnumerable<Task>>> GetUserTasksAsync(string id)
+    public async Task<Result<IEnumerable<Task>>> GetUserTasksAsync(Guid id)
     {
         _logger.LogInformation("Getting tasks for user {UserId}", id);
         throw new NotImplementedException();

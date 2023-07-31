@@ -58,28 +58,19 @@ public class TaskInMemoryRepository : ITaskRepository
     public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksByNameAsync(string userName)
     {
         var tasks = _tasks.Values.Where(t => t.AssignedUser?.Name == userName).ToList();
-
-        return tasks.Any() 
-            ? Result<IEnumerable<DomainTask>>.Success(tasks) 
-            : Result<IEnumerable<DomainTask>>.Failure("No tasks found for user", ImmutableList<DomainTask>.Empty);
+        return Result<IEnumerable<DomainTask>>.Success(tasks);
     }
 
     public Result<IEnumerable<DomainTask>> GetTasks()
     {
         var tasks = _tasks.Values.ToList();
-
-        return tasks.Any()
-            ? Result<IEnumerable<DomainTask>>.Success(tasks) 
-            : Result<IEnumerable<DomainTask>>.Failure("No tasks found", ImmutableList<DomainTask>.Empty);
+        return Result<IEnumerable<DomainTask>>.Success(tasks);
     }
 
-    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(string id)
+    public async Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(Guid id)
     {
-        var tasks = _tasks.Values.Where(t => t.AssignedUser?.Id == id).ToList();
-
-        return tasks.Any() 
-            ? Result<IEnumerable<DomainTask>>.Success(tasks) 
-            : Result<IEnumerable<DomainTask>>.Failure("No tasks found for user", ImmutableList<DomainTask>.Empty);
+        var tasks = _tasks.Values.Where(t => t.AssignedUser?.Id == id.ToString()).ToList();
+        return Result<IEnumerable<DomainTask>>.Success(tasks);
     }
 
     public async Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id)
