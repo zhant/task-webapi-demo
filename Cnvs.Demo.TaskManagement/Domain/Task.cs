@@ -36,7 +36,7 @@ public class Task
     public DateTime? CompletedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
 
-    public User? AssignedUser { get; set; }
+    public User AssignedUser { get; set; } = NullUser.Instance;
     public List<User> AssignedUsersHistory { get; set; } = new();
     public int TransferCount { get; set; }
     public bool IsDeleted { get; set; }
