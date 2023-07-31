@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Cnvs.Demo.TaskManagement.Domain;
+using Cnvs.Demo.TaskManagement.Dto;
 using Microsoft.AspNetCore.Mvc;
 using DtoUser = Cnvs.Demo.TaskManagement.Dto.User;
 
@@ -26,8 +28,8 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetUser(string id)
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetUser(Guid id)
     {
         var result = await _taskEngine.GetUserAsync(id);
         return result.IsSuccess 
@@ -45,7 +47,7 @@ public class UsersController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> AddUser(DtoUser userDto)
+    public async Task<IActionResult> AddUser(UserToCreate userDto)
     {
         var domainUser = Domain.User.Create(userDto.Name);
         domainUser.CreatedAt = DateTime.UtcNow;
@@ -80,6 +82,12 @@ public class UsersController : ControllerBase
     [HttpGet("{id:guid}/tasks")]
     public async Task<IActionResult> GetUserTasks(Guid id)
     {
+        var userAsync = await _taskEngine.GetUserAsync(id);
+        if (NullUser.Instance.Equals(userAsync.Value))
+        {
+            return BadRequest($"User not found:{userAsync.ErrorMessage}");
+        }
+        
         var result = await _taskEngine.GetUserTasksByUserAsync(id);
         return result.IsSuccess 
             ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
@@ -89,6 +97,12 @@ public class UsersController : ControllerBase
     [HttpGet("{userName}/tasks")]
     public async Task<IActionResult> GetUserTasksByUserName(string userName)
     {
+        var userAsync = await _taskEngine.GetUserByNameAsync(userName);
+        if (NullUser.Instance.Equals(userAsync.Value))
+        {
+            return BadRequest($"User not found:{userAsync.ErrorMessage}");
+        }
+        
         var result = await _taskEngine.GetUserTasksByUserNameAsync(userName);
         return result.IsSuccess 
             ? Ok(result.Value.Select(task => _mapper.Map<Dto.Task>(task))) 
