@@ -15,6 +15,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cnvs.Demo.TaskManagement.WebApi.Curl", "Cnvs.Demo.TaskManagement.WebApi.Curl", "{04DED9BC-AC1B-4C9F-84F3-149C00ACDA41}"
 	ProjectSection(SolutionItems) = preProject
 		Cnvs.Demo.TaskManagement.WebApi.Curl\CreateXTasks.ps1 = Cnvs.Demo.TaskManagement.WebApi.Curl\CreateXTasks.ps1
+		Cnvs.Demo.TaskManagement.WebApi.Curl\CreateOneUser.ps1 = Cnvs.Demo.TaskManagement.WebApi.Curl\CreateOneUser.ps1
+		Cnvs.Demo.TaskManagement.WebApi.Curl\CreateThreeUsers.ps1 = Cnvs.Demo.TaskManagement.WebApi.Curl\CreateThreeUsers.ps1
 	EndProjectSection
 EndProject
 Global
