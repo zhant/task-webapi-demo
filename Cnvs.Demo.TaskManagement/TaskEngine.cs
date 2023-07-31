@@ -203,14 +203,14 @@ public class TaskEngine : ITaskEngine
     {
         var userName = userToCreate.Name;
         var result = await _userRepository.GetUserByNameAsync(userName);
-        if (result.IsFailure)
+        if (!result.IsFailure)
         {
             var message = $"Failed to get user {userName}: {result.ErrorMessage}";
             _logger.LogError(message);
             return Result<User>.Failure(message, NullUser.Instance);
         }        
         
-        if (result.IsSuccess && result.Value != NullUser.Instance)
+        if (result.IsSuccess && !NullUser.Instance.Equals(result.Value))
         {
             return Result<User>.Failure($"User with name {userName} already exists", NullUser.Instance);
         }
