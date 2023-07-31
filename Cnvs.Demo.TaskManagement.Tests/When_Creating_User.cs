@@ -1,7 +1,9 @@
+using Cnvs.Demo.TaskManagement.Configuration;
 using Cnvs.Demo.TaskManagement.Domain;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Tests;
@@ -10,23 +12,32 @@ public class When_Creating_User
 {
     private const string UserName = "TestUser";
     private readonly User _testUser = User.Create(UserName);
-    
+    private readonly TaskEngine _taskEngine;
+    private readonly IUserRepository _fakeUserRepo;
+
+    public When_Creating_User()
+    {
+        var fakeTaskRepo = A.Fake<ITaskRepository>();
+        _fakeUserRepo = A.Fake<IUserRepository>();
+        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
+        var userRandomizer = A.Fake<IUserRandomizer>();
+        var options = A.Fake<IOptionsSnapshot<TaskEngineOptions>>();
+        _taskEngine = new TaskEngine(fakeTaskRepo,
+            _fakeUserRepo,
+            fakeLogger,
+            userRandomizer,
+            options);
+    }
+
     [Fact]
     public async Task CreateUserAsync_ShouldReturnFailure_WhenGetUserAsyncFails()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-
-        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
+        A.CallTo(() => _fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Failure("Storage error", NullUser.Instance));
 
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         // Act
-        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
+        var result = await _taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -37,18 +48,11 @@ public class When_Creating_User
     public async Task CreateUserAsync_ShouldReturnFailure_WhenUserAlreadyExists()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-
-        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
+        A.CallTo(() => _fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(_testUser));
 
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         // Act
-        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
+        var result = await _taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -59,22 +63,15 @@ public class When_Creating_User
     public async Task CreateUserAsync_ShouldReturnFailure_WhenAddUserFails()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-
-        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
+        A.CallTo(() => _fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(NullUser.Instance));
         
         var failure = Result<User>.Failure($"Failed to add user to repository: {UserName}", NullUser.Instance);
-        A.CallTo(() => fakeUserRepo.AddUser(A<User>._))
+        A.CallTo(() => _fakeUserRepo.AddUser(A<User>._))
             .Returns(failure);
 
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         // Act
-        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
+        var result = await _taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -85,20 +82,13 @@ public class When_Creating_User
     public async Task CreateUserAsync_ShouldReturnSuccess_WhenUserIsAddedSuccessfully()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-
-        A.CallTo(() => fakeUserRepo.GetUserByNameAsync(UserName))
+        A.CallTo(() => _fakeUserRepo.GetUserByNameAsync(UserName))
             .Returns(Result<User>.Success(NullUser.Instance));
-        A.CallTo(() => fakeUserRepo.AddUser(A<User>.That.Matches(u => u.Name == UserName)))
+        A.CallTo(() => _fakeUserRepo.AddUser(A<User>.That.Matches(u => u.Name == UserName)))
             .Returns(Result<User>.Success(_testUser));
 
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         // Act
-        var result = await taskEngine.CreateUserAsync(User.Create(UserName));
+        var result = await _taskEngine.CreateUserAsync(User.Create(UserName));
 
         // Assert
         result.IsSuccess.Should().BeTrue();

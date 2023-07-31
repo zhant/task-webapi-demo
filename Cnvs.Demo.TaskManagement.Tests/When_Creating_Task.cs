@@ -1,33 +1,48 @@
-﻿using Cnvs.Demo.TaskManagement.Domain;
+﻿using Cnvs.Demo.TaskManagement.Configuration;
+using Cnvs.Demo.TaskManagement.Domain;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Tests;
 
 public class When_Creating_Task
 {
+    private readonly TaskEngine _taskEngine;
+    private readonly ITaskRepository _fakeTaskRepo;
+    private readonly IUserRepository _fakeUserRepo;
+    private readonly IUserRandomizer _userRandomizer;
     private const string TaskDescription = "Test Task";
+
+    public When_Creating_Task()
+    {
+        _fakeTaskRepo = A.Fake<ITaskRepository>();
+        _fakeUserRepo = A.Fake<IUserRepository>();
+        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
+        _userRandomizer = A.Fake<IUserRandomizer>();
+        var options = A.Fake<IOptionsSnapshot<TaskEngineOptions>>();
+        _taskEngine = new TaskEngine(_fakeTaskRepo,
+            _fakeUserRepo,
+            fakeLogger,
+            _userRandomizer,
+            options);
+    }
 
     [Fact]
     public async Task CreateTaskAsync_ShouldReturnFailure_WhenAddTaskFails()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-        
-        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
+
+        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Failure("Storage error", NullTask.Instance));
         var testUser = User.Create("TestUser");
-        A.CallTo(() => fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
 
         // Act
-        var result = await taskEngine.CreateTaskAsync(TaskDescription);
+        var result = await _taskEngine.CreateTaskAsync(TaskDescription);
 
         // Assert
         result.IsSuccess.Should().BeFalse();
@@ -38,24 +53,18 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_ShouldReturnSuccess_WhenAddTaskSucceeds()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
         var testTask = Domain.Task.NewTask(TaskDescription);
 
         var testUser = User.Create("TestUser");
-        A.CallTo(() => fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
-        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));
-        A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
+        A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(User.Create("TestUser"));
 
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         // Act
-        var result = await taskEngine.CreateTaskAsync(TaskDescription);
+        var result = await _taskEngine.CreateTaskAsync(TaskDescription);
         
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -66,22 +75,16 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_AssignedUserShouldBeNull_WhenGetRandomUserReturnsNullUserInstance()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
-        A.CallTo(() => fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));
-        A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
+        A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(NullUser.Instance);
 
-        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
             .ReturnsLazily((Domain.Task t) => Result<Domain.Task>.Success(t));
 
         // Act
-        var result = await taskEngine.CreateTaskAsync(TaskDescription);
+        var result = await _taskEngine.CreateTaskAsync(TaskDescription);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -92,23 +95,17 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_AssignedUserShouldNotBeNull_WhenGetRandomUserReturnsUserInstance()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
-
         var testUser = User.Create("TestUser");
-        A.CallTo(() => fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
-        A.CallTo(() => userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
+        A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(testUser);
         
-        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
             .ReturnsLazily((Domain.Task t) => Result<Domain.Task>.Success(t));
 
         // Act
-        var result = await taskEngine.CreateTaskAsync(TaskDescription);
+        var result = await _taskEngine.CreateTaskAsync(TaskDescription);
 
         // Assert
         result.IsSuccess.Should().BeTrue();
@@ -119,15 +116,10 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_ShouldThrowArgumentException_WhenTaskDescriptionIsEmpty()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
         const string emptyDescription = "";
 
         // Act
-        Func<Task> act = async () => await taskEngine.CreateTaskAsync(emptyDescription);
+        Func<Task> act = async () => await _taskEngine.CreateTaskAsync(emptyDescription);
 
         // Assert
         await act.Should().ThrowExactlyAsync<ArgumentException>()
@@ -138,20 +130,15 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_ShouldAddTaskToRepository_WhenTaskIsValid()
     {
         // Arrange
-        var fakeTaskRepo = A.Fake<ITaskRepository>();
-        var fakeUserRepo = A.Fake<IUserRepository>();
-        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
-        var userRandomizer = A.Fake<IUserRandomizer>();
         var testUser = User.Create("TestUser");
-        A.CallTo(() => fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
-        var taskEngine = new TaskEngine(fakeTaskRepo, fakeUserRepo, fakeLogger, userRandomizer);
         const string validDescription = "Valid description";
 
         // Act
-        await taskEngine.CreateTaskAsync(validDescription);
+        await _taskEngine.CreateTaskAsync(validDescription);
 
         // Assert
-        A.CallTo(() => fakeTaskRepo.AddTask(A<Domain.Task>._)).MustHaveHappened();
+        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._)).MustHaveHappened();
     }
 }

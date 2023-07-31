@@ -1,32 +1,38 @@
-﻿using Cnvs.Demo.TaskManagement.Domain;
+﻿using Cnvs.Demo.TaskManagement.Configuration;
+using Cnvs.Demo.TaskManagement.Domain;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
 
 namespace Cnvs.Demo.TaskManagement.Tests;
 
 public class When_rotating_task
 {
-    private readonly ITaskRepository _taskRepository;
-    private readonly IUserRepository _userRepository;
-    private readonly ILogger<TaskEngine> _logger;
+    private readonly TaskEngine _taskEngine;
+    private readonly ITaskRepository _fakeTaskRepo;
+    private readonly IUserRepository _fakeUserRepo;
     private readonly IUserRandomizer _userRandomizer;
-    private TaskEngine _taskEngine = null!;
 
     public When_rotating_task()
     {
-        _taskRepository = A.Fake<ITaskRepository>();
-        _userRepository = A.Fake<IUserRepository>();
-        _logger = A.Fake<ILogger<TaskEngine>>();
-        _userRandomizer = new UserRandomizer();
+        _fakeTaskRepo = A.Fake<ITaskRepository>();
+        _fakeUserRepo = A.Fake<IUserRepository>();
+        var fakeLogger = A.Fake<ILogger<TaskEngine>>();
+        _userRandomizer = A.Fake<IUserRandomizer>();
+        var options = A.Fake<IOptionsSnapshot<TaskEngineOptions>>();
+        _taskEngine = new TaskEngine(_fakeTaskRepo,
+            _fakeUserRepo,
+            fakeLogger,
+            _userRandomizer,
+            options);
     }
 
     [Fact]
     public void RotateTask_Should_Throw_InvalidOperationException_When_Task_Is_Completed()
     {
         // Arrange
-        _taskEngine = new TaskEngine(_taskRepository, _userRepository, _logger, _userRandomizer);
         var task = Domain.Task.NewTask("Description 1");
         task.State = TaskState.Completed;
 
@@ -45,12 +51,9 @@ public class When_rotating_task
         task.AssignedUser = User.Create("User1"); 
         var users = new List<User> { User.Create("User1") };
         
-        A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
-        A.CallTo(() => _taskRepository.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
+        A.CallTo(() => _fakeUserRepo.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
+        A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
         
-        _taskEngine = new TaskEngine(_taskRepository, _userRepository, _logger, _userRandomizer);
-        _taskEngine.InitializeAsync().Wait();
-
         // Act
         _taskEngine.RotateTask(task);
 
@@ -62,16 +65,14 @@ public class When_rotating_task
     public void RotateTask_Should_SetStateAsWaiting_When_NoUsersAvailable()
     {
         // Arrange
-        var users = new List<User> { User.Create("User1") };
+        var user = User.Create("User1");
+        var users = new List<User> { user };
         var task = Domain.Task.NewTask("Description 1");
-        task.AssignedUser = User.Create("User1"); 
-        task.AssignedUsersHistory = new List<User> { task.AssignedUser };
+        task.StartWithUser(user);
 
-        A.CallTo(() => _userRepository.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
-        A.CallTo(() => _taskRepository.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
-
-        _taskEngine = new TaskEngine(_taskRepository, _userRepository, _logger, _userRandomizer);
-
+        A.CallTo(() => _fakeUserRepo.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
+        A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
+        A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._)).Returns(NullUser.Instance);
         // Act
         _taskEngine.RotateTask(task);
 
