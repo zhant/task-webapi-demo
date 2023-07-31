@@ -37,12 +37,12 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpGet("userName/{userName}")]
-    public async Task<IActionResult> GetUserByName(string userName)
+    [HttpGet("search")]
+    public async Task<IActionResult> GetUserByName([FromQuery] string userName)
     {
         var result = await _taskEngine.GetUserByNameAsync(userName);
         return result.IsSuccess 
-            ? Ok(_mapper.Map<DtoUser>(result.Value))
+            ? Ok(new[] { _mapper.Map<DtoUser>(result.Value) })
             : BadRequest(result.ErrorMessage);
     }
 
