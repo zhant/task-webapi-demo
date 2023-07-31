@@ -7,7 +7,6 @@ namespace Cnvs.Demo.TaskManagement;
 public interface ITaskRepository
 {
     Task<Result<DomainTask>> AddTaskAsync(Domain.Task task);
-    Result<DomainTask> AddTask(Domain.Task task);
     Task<Result<DomainTask>> GetTaskAsync(Guid taskId);
     Task<Result<IEnumerable<DomainTask>>> GetTasksAsync();
     Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState[] taskStates);

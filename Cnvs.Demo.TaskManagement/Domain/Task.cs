@@ -4,14 +4,24 @@ public class Task
 {
     private protected Task(Guid taskId, string taskDescription)
     {
+        if (string.IsNullOrWhiteSpace(taskDescription))
+        {
+            throw new ArgumentException(nameof(taskDescription));
+        }
+        
         Id = taskId;
-        Description = taskDescription ?? throw new ArgumentNullException(nameof(taskDescription));
+        Description = taskDescription;
     }
 
     private Task(string taskDescription)
     {
+        if (string.IsNullOrWhiteSpace(taskDescription))
+        {
+            throw new ArgumentException(nameof(taskDescription));
+        }
+        
         Id = Guid.NewGuid();
-        Description = taskDescription ?? throw new ArgumentNullException(nameof(taskDescription));
+        Description = taskDescription;
     }
 
     public static Task NewTask(string taskDescription)
@@ -54,14 +64,14 @@ public class Task
         }
 
         State = TaskState.Completed;
-        CompletedAt = DateTime.UtcNow;
+        CompletedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
         AssignedUser = NullUser.Instance;
     }
 
     public void Suspend()
     {
         State = TaskState.Waiting;
-        SuspendedAt = DateTime.UtcNow;
+        SuspendedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
         AssignedUser = NullUser.Instance;
     }
 
@@ -79,7 +89,7 @@ public class Task
 
         AssignedUser = newUser;
         State = TaskState.InProgress;
-        StartedAt ??= DateTime.UtcNow;
+        StartedAt ??= DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
         SuspendedAt = null;
         AssignedUsersHistory.Add(newUser);
         TransferCount++;
@@ -89,6 +99,6 @@ public class Task
     {
         IsDeleted = true;
         AssignedUser = NullUser.Instance;
-        DeletedAt = DateTime.UtcNow;
+        DeletedAt = DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc);
     }
 }
