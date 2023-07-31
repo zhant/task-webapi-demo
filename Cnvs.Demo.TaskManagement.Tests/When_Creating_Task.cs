@@ -35,7 +35,7 @@ public class When_Creating_Task
     {
         // Arrange
 
-        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Failure("Storage error", NullTask.Instance));
         var testUser = User.Create("TestUser");
         A.CallTo(() => _fakeUserRepo.GetUsers())
@@ -58,7 +58,7 @@ public class When_Creating_Task
         var testUser = User.Create("TestUser");
         A.CallTo(() => _fakeUserRepo.GetUsers())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
-        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(User.Create("TestUser"));
@@ -80,7 +80,7 @@ public class When_Creating_Task
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(NullUser.Instance);
 
-        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .ReturnsLazily((Domain.Task t) => Result<Domain.Task>.Success(t));
 
         // Act
@@ -101,7 +101,7 @@ public class When_Creating_Task
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(testUser);
         
-        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._))
+        A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .ReturnsLazily((Domain.Task t) => Result<Domain.Task>.Success(t));
 
         // Act
@@ -139,6 +139,6 @@ public class When_Creating_Task
         await _taskEngine.CreateTaskAsync(validDescription);
 
         // Assert
-        A.CallTo(() => _fakeTaskRepo.AddTask(A<Domain.Task>._)).MustHaveHappened();
+        A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._)).MustHaveHappened();
     }
 }

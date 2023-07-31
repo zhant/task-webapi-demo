@@ -20,9 +20,19 @@ public class TaskRepository : ITaskRepository
         throw new NotImplementedException();
     }
 
-    public async Task<Result<DomainTask>> AddTask(DomainTask task)
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksByDescriptionAsync(string description)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<Result<DomainTask>> AddTaskAsync(DomainTask task)
     {
         _logger.LogInformation("Adding task {TaskId}", task.Id);
+        throw new NotImplementedException();
+    }
+
+    public Result<DomainTask> AddTask(DomainTask task)
+    {
         throw new NotImplementedException();
     }
 

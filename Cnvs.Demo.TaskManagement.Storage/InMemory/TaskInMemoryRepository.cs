@@ -18,11 +18,21 @@ public class TaskInMemoryRepository : ITaskRepository
             : Result<string>.Failure("Task not found", taskId.ToString());
     }
 
-    public async Task<Result<DomainTask>> AddTask(DomainTask task)
+    public async Task<Result<IEnumerable<DomainTask>>> GetTasksByDescriptionAsync(string description)
+    {
+        var tasks = _tasks.Values.Where(x => x.Description.Contains(description));
+        return await Task.FromResult(Result<IEnumerable<DomainTask>>.Success(tasks));
+    }
+
+    public Result<DomainTask> AddTask(DomainTask task)
     {
         _tasks[task.Id] = task;
- 
         return Result<DomainTask>.Success(task);
+    }
+    
+    public async Task<Result<DomainTask>> AddTaskAsync(DomainTask task)
+    {
+        throw new NotImplementedException();
     }
 
     public async Task<Result<DomainTask>> GetTaskAsync(Guid taskId)
