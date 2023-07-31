@@ -7,7 +7,6 @@ public class TaskRotationService : BackgroundService
 {
     // Could be configurable with IOptions, but this is out of the scope for this demo.
     private const int RotationTimeMinutes = 2;
-    private const int ChangesBetweenUsers = 3;
     
     private readonly ILogger<TaskRotationService> _logger;
     private readonly ITaskEngine _taskEngine;
@@ -48,14 +47,22 @@ public class TaskRotationService : BackgroundService
         }
         
         var users = usersResult.Value.ToArray();
-        if (users.Length < ChangesBetweenUsers)
+ 
+        if (!users.Any())
         {
             _logger.LogInformation("Not enough users found for rotation: [{UsersLength}]", users.Length);
             return;
         }
         
         // We select also waiting tasks if they exist to assign them to the new user
-        var tasks = _taskEngine.GetTasks(new[] { TaskState.Waiting, TaskState.Completed }).Value.ToArray();
+        var result = _taskEngine.GetTasks(new[] { TaskState.Waiting, TaskState.InProgress }).Result;
+        if (!result.IsSuccess)
+        {
+            _logger.LogError("Failed to get tasks for rotation: {Error}", result.ErrorMessage);
+            return;
+        }
+
+        var tasks = result.Value.ToArray();
         foreach (var task in tasks)
         {
             _taskEngine.RotateTask(task);
