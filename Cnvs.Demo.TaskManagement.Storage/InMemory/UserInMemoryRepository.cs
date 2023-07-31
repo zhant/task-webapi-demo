@@ -26,10 +26,7 @@ public class UserInMemoryRepository : IUserRepository
     {
         _users.TryGetValue(userName, out var user);
         user ??= NullUser.Instance;
-
-        return user is NullUser 
-            ? Result<User>.Failure("User not found", user) 
-            : Result<User>.Success(user);
+        return Result<User>.Success(user);
     }
 
     public Result<IEnumerable<User>> GetUsers()

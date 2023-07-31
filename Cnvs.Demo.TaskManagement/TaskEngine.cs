@@ -203,7 +203,7 @@ public class TaskEngine : ITaskEngine
     {
         var userName = userToCreate.Name;
         var result = await _userRepository.GetUserByNameAsync(userName);
-        if (!result.IsFailure)
+        if (result.IsFailure)
         {
             var message = $"Failed to get user {userName}: {result.ErrorMessage}";
             _logger.LogError(message);
