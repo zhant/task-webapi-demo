@@ -34,14 +34,14 @@ public class TasksController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
     
-    // [HttpGet("{description}")]
-    // public async Task<IActionResult> GetTaskByDescription(string description)
-    // {
-    //     var result = await _taskEngine.GetTaskByDescriptionAsync(description);
-    //     return result.IsSuccess 
-    //         ? Ok(_mapper.Map<Dto.Task>(result.Value))
-    //         : BadRequest(result.ErrorMessage);
-    // }
+    [HttpGet("search")]
+    public async Task<IActionResult> GetTaskByDescription([FromQuery] string description)
+    {
+        var result = await _taskEngine.GetTasksByDescriptionAsync(description);
+        return result.IsSuccess 
+            ? Ok(result.Value.Select(x => _mapper.Map<Dto.Task>(x)))
+            : BadRequest(result.ErrorMessage);
+    }
 
     [HttpGet("{id:guid}/users")]
     public async Task<IActionResult> GetTaskUsers(Guid id)
