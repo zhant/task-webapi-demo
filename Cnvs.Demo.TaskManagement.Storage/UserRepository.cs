@@ -13,7 +13,7 @@ public class UserRepository : IUserRepository
         _logger = logger;
     }
 
-    public async Task<Result<User>> GetRandomUserAsync()
+    public Task<Result<User>> GetRandomUserAsync()
     {
         try
         {
@@ -44,7 +44,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<Result<User>> GetUserAsync(Guid id)
+    public Task<Result<User>> GetUserAsync(Guid id)
     {
         throw new NotImplementedException();
     }
@@ -66,7 +66,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public Result<IEnumerable<User>> GetUsers()
+    public Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
         try
         {
@@ -76,7 +76,7 @@ public class UserRepository : IUserRepository
             var users = Enumerable.Empty<User>();
 
             _logger.LogInformation("Successfully retrieved all users");
-            return Result<IEnumerable<User>>.Success(users);
+            return Task.FromResult(Result<IEnumerable<User>>.Success(users));
         }
         catch (Exception ex)
         {
@@ -85,7 +85,7 @@ public class UserRepository : IUserRepository
         }
     }
 
-    public async Task<Result<string>> DeleteUserAsync(string userName)
+    public Task<Result<string>> DeleteUserAsync(string userName)
     {
         try
         {

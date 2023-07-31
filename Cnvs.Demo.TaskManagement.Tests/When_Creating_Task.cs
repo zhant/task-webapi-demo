@@ -38,7 +38,7 @@ public class When_Creating_Task
         A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Failure("Storage error", NullTask.Instance));
         var testUser = User.Create("TestUser");
-        A.CallTo(() => _fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
 
         // Act
@@ -56,7 +56,7 @@ public class When_Creating_Task
         var testTask = Domain.Task.NewTask(TaskDescription);
 
         var testUser = User.Create("TestUser");
-        A.CallTo(() => _fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         A.CallTo(() => _fakeTaskRepo.AddTaskAsync(A<Domain.Task>._))
             .Returns(Result<Domain.Task>.Success(testTask));
@@ -75,7 +75,7 @@ public class When_Creating_Task
     public async Task CreateTaskAsync_AssignedUserShouldBeNull_WhenGetRandomUserReturnsNullUserInstance()
     {
         // Arrange
-        A.CallTo(() => _fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync())
             .Returns(Result<IEnumerable<User>>.Success(Enumerable.Empty<User>()));
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(NullUser.Instance);
@@ -96,7 +96,7 @@ public class When_Creating_Task
     {
         // Arrange
         var testUser = User.Create("TestUser");
-        A.CallTo(() => _fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._))
             .Returns(testUser);
@@ -131,7 +131,7 @@ public class When_Creating_Task
     {
         // Arrange
         var testUser = User.Create("TestUser");
-        A.CallTo(() => _fakeUserRepo.GetUsers())
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync())
             .Returns(Result<IEnumerable<User>>.Success(new[] { testUser }));
         const string validDescription = "Valid description";
 

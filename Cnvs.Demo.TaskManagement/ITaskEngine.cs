@@ -14,10 +14,10 @@ public interface ITaskEngine
     Task<Result<User>> CreateUserAsync(User user);
     Task<Result<string>> DeleteUserAsync(string name);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserNameAsync(string name);
-    void RotateTask(Domain.Task task);
+    Task RotateTask(Domain.Task task);
     Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
     Task<Result<IEnumerable<Domain.Task>>> GetTasks(TaskState[] allowedStates);
-    Result<IEnumerable<User>> GetUsers();
+    Task<Result<IEnumerable<User>>> GetUsers();
     Task<Result<User>> GetUserAsync(Guid id);
     Task<Result<User>> UpdateUserAsync(User domainUser);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserAsync(Guid name);

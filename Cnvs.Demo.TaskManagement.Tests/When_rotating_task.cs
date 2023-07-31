@@ -37,10 +37,10 @@ public class When_rotating_task
         task.State = TaskState.Completed;
 
         // Act
-        var action = () => _taskEngine.RotateTask(task);
+        var action = async () => await _taskEngine.RotateTask(task);
 
         // Assert
-        action.Should().Throw<InvalidOperationException>().WithMessage("Cannot rotate a completed task");
+        action.Should().ThrowAsync<InvalidOperationException>().WithMessage("Cannot rotate a completed task");
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class When_rotating_task
         task.AssignedUser = User.Create("User1"); 
         var users = new List<User> { User.Create("User1") };
         
-        A.CallTo(() => _fakeUserRepo.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync()).Returns(Result<IEnumerable<User>>.Success(users));
         A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
         
         // Act
@@ -70,7 +70,7 @@ public class When_rotating_task
         var task = Domain.Task.NewTask("Description 1");
         task.StartWithUser(user);
 
-        A.CallTo(() => _fakeUserRepo.GetUsers()).Returns(Result<IEnumerable<User>>.Success(users));
+        A.CallTo(() => _fakeUserRepo.GetUsersAsync()).Returns(Result<IEnumerable<User>>.Success(users));
         A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._)).Returns(NullUser.Instance);
         // Act

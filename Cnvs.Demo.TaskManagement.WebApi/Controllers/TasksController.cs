@@ -63,7 +63,7 @@ public class TasksController : ControllerBase
     }
     
     [HttpPut]
-    public async Task<IActionResult> UpdateTask(Dto.Task task)
+    public Task<IActionResult> UpdateTask(Dto.Task task)
     {
         throw new NotImplementedException();
         // var result = await _taskEngine.UpdateTaskAsync(taskToCreate.Id, taskToCreate.Description);

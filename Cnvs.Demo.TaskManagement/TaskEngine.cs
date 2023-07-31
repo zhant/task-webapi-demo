@@ -2,6 +2,7 @@
 using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.Extensions.Options;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement;
 
@@ -26,7 +27,7 @@ public class TaskEngine : ITaskEngine
         _changesBetweenUsers = options.Value.ChangesBetweenUsers;
     }
     
-    public void RotateTask(DomainTask task)
+    public async Task RotateTask(DomainTask task)
     {
         if (task.State == TaskState.Completed)
         {
@@ -38,7 +39,7 @@ public class TaskEngine : ITaskEngine
         
         do
         {
-            newUser = GetRandomUser(usersToExclude: usersToExclude);
+            newUser = await GetRandomUser(usersToExclude: usersToExclude);
             if (newUser is NullUser)
             {
                 break;
@@ -61,9 +62,9 @@ public class TaskEngine : ITaskEngine
         task.Complete();
     }
 
-    private User GetRandomUser()
+    private async Task<User> GetRandomUser()
     {
-        var result = GetUsers();
+        var result = await GetUsers();
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get users: {Error}", result.ErrorMessage);
@@ -73,9 +74,9 @@ public class TaskEngine : ITaskEngine
         return _userRandomizer.GetRandomUser(result.Value);
     }
 
-    private User GetRandomUser(IEnumerable<User> usersToExclude)
+    private async Task<User> GetRandomUser(IEnumerable<User> usersToExclude)
     {
-        var result = GetUsers();
+        var result = await GetUsers();
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get users: {Error}", result.ErrorMessage);
@@ -92,7 +93,7 @@ public class TaskEngine : ITaskEngine
             throw new ArgumentException("Description cannot be empty");
         }
 
-        var userToBeAssigned = GetRandomUser();
+        var userToBeAssigned = await GetRandomUser();
         var task = Domain.Task.NewTask(taskDescription);
         if (userToBeAssigned is not NullUser)
         {
@@ -222,9 +223,9 @@ public class TaskEngine : ITaskEngine
         return result;
     }
     
-    public Result<IEnumerable<User>> GetUsers()
+    public async Task<Result<IEnumerable<User>>> GetUsers()
     {
-        var result = _userRepository.GetUsers();
+        var result = await _userRepository.GetUsersAsync();
         
         return result.IsSuccess 
             ? Result<IEnumerable<User>>.Success(result.Value)
@@ -237,12 +238,13 @@ public class TaskEngine : ITaskEngine
         if (result.IsFailure)
         {
             _logger.LogError("Failed to get user {Id}: {Error}", id, result.ErrorMessage);
+            return Result<User>.Failure($"Failed to get user {id}: {result.ErrorMessage}", NullUser.Instance);
         }
     
         return result;
     }
 
-    public async Task<Result<User>> UpdateUserAsync(User domainUser)
+    public Task<Result<User>> UpdateUserAsync(User domainUser)
     {
         throw new NotImplementedException();
     }
@@ -270,9 +272,9 @@ public class TaskEngine : ITaskEngine
         return Result<IEnumerable<DomainTask>>.Success(result.Value);
     }
 
-    public async Task<Result<IEnumerable<User>>> GetUsersAsync()
+    public Task<Result<IEnumerable<User>>> GetUsersAsync()
     {
-        return _userRepository.GetUsers();
+        return _userRepository.GetUsersAsync();
     }
     
     public async Task<Result<string>> DeleteUserAsync(string userName)
