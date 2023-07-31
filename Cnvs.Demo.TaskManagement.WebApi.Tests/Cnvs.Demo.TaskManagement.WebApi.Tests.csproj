@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <Folder Include="bin\" />
-      <Folder Include="ControllerTests\" />
       <Folder Include="IntegrationTests\" />
     </ItemGroup>
 
