@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
 
 [ApiController]
-[Route("task-management/tasks")]
+[Route("taskToCreate-management/tasks")]
 public class TasksController : ControllerBase
 {
     private readonly ITaskEngine _taskEngine;
@@ -53,9 +53,9 @@ public class TasksController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateTask(Dto.Task task)
+    public async Task<IActionResult> CreateTask(Dto.TaskToCreate taskToCreate)
     {
-        var result = await _taskEngine.CreateTaskAsync(task.Description);
+        var result = await _taskEngine.CreateTaskAsync(taskToCreate.Description);
         var taskCreated = _mapper.Map<Dto.Task>(result.Value);
         return result.IsSuccess 
             ? CreatedAtAction(nameof(GetTask), new { id = taskCreated.Id }, taskCreated)
@@ -66,7 +66,7 @@ public class TasksController : ControllerBase
     public async Task<IActionResult> UpdateTask(Dto.Task task)
     {
         throw new NotImplementedException();
-        // var result = await _taskEngine.UpdateTaskAsync(task.Id, task.Description);
+        // var result = await _taskEngine.UpdateTaskAsync(taskToCreate.Id, taskToCreate.Description);
         // return result.IsSuccess 
             // ? Ok(_mapper.Map<Dto.Task>(result.Value))
             // : BadRequest(result.ErrorMessage);
