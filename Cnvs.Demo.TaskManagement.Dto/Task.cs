@@ -10,5 +10,8 @@ public class Task
     public DateTime? SuspendedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     public DateTime? DeletedAt { get; set; }
+    public User? AssignedUser { get; set; }
+    public int TransferCount { get; set; }
+    public User[] AssignedUsersHistory { get; set; } = Array.Empty<User>();
 }
 
