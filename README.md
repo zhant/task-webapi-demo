@@ -15,6 +15,3 @@ The initial looze requirements are:
 9. No user interface is requirement for the assignment.
 
 We purposely left requirements loose.
-
-## Solution
-
