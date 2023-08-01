@@ -19,6 +19,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cnvs.Demo.TaskManagement.We
 		Cnvs.Demo.TaskManagement.WebApi.Curl\CreateThreeUsers.ps1 = Cnvs.Demo.TaskManagement.WebApi.Curl\CreateThreeUsers.ps1
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Docker-curls", "Docker-curls", "{DABE6F5E-AD51-4515-B8FE-939226BF458A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,5 +51,8 @@ Global
 		{3A43B02D-BF26-49FA-A059-5051C32C9E7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A43B02D-BF26-49FA-A059-5051C32C9E7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A43B02D-BF26-49FA-A059-5051C32C9E7A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DABE6F5E-AD51-4515-B8FE-939226BF458A} = {04DED9BC-AC1B-4C9F-84F3-149C00ACDA41}
 	EndGlobalSection
 EndGlobal
