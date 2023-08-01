@@ -147,12 +147,12 @@ public class TaskEngine : ITaskEngine
         return result;
     }
 
-    public async Task<Result<DomainTask>> UpdateTaskAsync(DomainTask task)
+    public async Task<Result<DomainTask>> UpdateTaskAsync(Guid id, string description)
     {
-        var result = await _taskRepository.UpdateTaskAsync(task);
+        var result = await _taskRepository.UpdateTaskAsync(id, description);
         if (result.IsFailure)
         {
-            _logger.LogError("Failed to update task {TaskId}: {Error}", task.Id, result.ErrorMessage);
+            _logger.LogError("Failed to update task {TaskId}: {Error}", id, result.ErrorMessage);
         }
         
         return result;

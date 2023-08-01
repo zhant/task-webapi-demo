@@ -22,4 +22,5 @@ public interface ITaskEngine
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserAsync(Guid name);
     Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id);
     Task<Result<IEnumerable<Domain.Task>>> GetTasksByDescriptionAsync(string description);
+    Task<Result<Domain.Task>> UpdateTaskAsync(Guid id, string description);
 }

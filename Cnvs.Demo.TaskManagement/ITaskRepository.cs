@@ -10,12 +10,11 @@ public interface ITaskRepository
     Task<Result<DomainTask>> GetTaskAsync(Guid taskId);
     Task<Result<IEnumerable<DomainTask>>> GetTasksAsync();
     Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState[] taskStates);
-    Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState taskState);
     Task<Result<DomainTask>> UpdateTaskAsync(Domain.Task task);
+    Task<Result<DomainTask>> UpdateTaskAsync(Guid taskId, string description);
     Task<Result<IEnumerable<DomainTask>>> GetUserTasksByNameAsync(string userName);
     Result<IEnumerable<DomainTask>> GetTasks();
     Task<Result<IEnumerable<DomainTask>>> GetUserTasksAsync(Guid id);
     Task<Result<IEnumerable<User>>> GetTaskUsersAsync(Guid id);
-    Task<Result<string>> DeleteTaskAsync(Guid taskId);
     Task<Result<IEnumerable<DomainTask>>> GetTasksByDescriptionAsync(string description);
 }

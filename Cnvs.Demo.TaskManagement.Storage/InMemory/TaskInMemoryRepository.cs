@@ -48,6 +48,19 @@ public class TaskInMemoryRepository : ITaskRepository
         return Task.FromResult(Result<IEnumerable<DomainTask>>.Success(tasks));
     }
 
+    public Task<Result<DomainTask>> UpdateTaskAsync(Guid taskId, string description)
+    {
+        var taskExists = _tasks.TryGetValue(taskId, out var task);
+        if (!taskExists)
+        {
+            return Task.FromResult(Result<DomainTask>.Failure("Task not found", NullTask.Instance));
+        }
+        
+        task!.Description = description;
+        
+        return Task.FromResult(Result<DomainTask>.Success(task));
+    }
+
     public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState taskState)
     {
         if (!Enum.IsDefined(typeof(TaskState), taskState))

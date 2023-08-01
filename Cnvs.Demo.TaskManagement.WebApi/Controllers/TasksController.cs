@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Cnvs.Demo.TaskManagement.Domain;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cnvs.Demo.TaskManagement.WebApi.Controllers;
@@ -63,13 +64,14 @@ public class TasksController : ControllerBase
     }
     
     [HttpPut]
-    public Task<IActionResult> UpdateTask(Dto.Task task)
+    public async Task<IActionResult> UpdateTask(Dto.TaskToUpdate task)
     {
-        throw new NotImplementedException();
-        // var result = await _taskEngine.UpdateTaskAsync(taskToCreate.Id, taskToCreate.Description);
-        // return result.IsSuccess 
-            // ? Ok(_mapper.Map<Dto.Task>(result.Value))
-            // : BadRequest(result.ErrorMessage);
+        var result = await _taskEngine.UpdateTaskAsync(task.Id, task.Description);
+        return result is { IsSuccess: true, Value: NullTask }
+            ? NotFound(result.ErrorMessage)
+            : result.IsSuccess
+                ? Ok(_mapper.Map<Dto.Task>(result.Value))
+                : BadRequest(result.ErrorMessage);
     }
 
     [HttpDelete("{id:guid}")]
