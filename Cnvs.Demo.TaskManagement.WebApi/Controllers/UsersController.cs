@@ -44,7 +44,9 @@ public class UsersController : ControllerBase
     {
         var result = await _taskEngine.GetUserByNameAsync(userName);
         return result.IsSuccess 
-            ? Ok(new[] { _mapper.Map<DtoUser>(result.Value) })
+            ? result.Value is not NullUser 
+                ? Ok(new[] { _mapper.Map<DtoUser>(result.Value) })
+                : NotFound("User not found")
             : BadRequest(result.ErrorMessage);
     }
 
