@@ -19,19 +19,15 @@ public class UserInMemoryRepository : IUserRepository
 
     public Task<Result<User>> GetUserAsync(Guid id)
     {
-        var user = _users.ToArray().FirstOrDefault(x => x.Value.Id == id.ToString()).Value ?? NullUser.Instance;
-        return user is not NullUser
-            ? Task.FromResult(Result<User>.Success(user)) 
-            : Task.FromResult(Result<User>.Failure($"User {id} not found", user));
+        var user = _users.ToArray().SingleOrDefault(x => x.Value.Id == id.ToString()).Value ?? NullUser.Instance;
+        return Task.FromResult(Result<User>.Success(user));
     }
 
     public Task<Result<User>> GetUserByNameAsync(string userName)
     {
-        var value = _users.TryGetValue(userName, out var user);
+        _users.TryGetValue(userName, out var user);
         user ??= NullUser.Instance;
-        return value
-            ? Task.FromResult(Result<User>.Success(user)) 
-            : Task.FromResult(Result<User>.Failure($"User {userName} not found", user));
+        return Task.FromResult(Result<User>.Success(user));
     }
  
     public Task<Result<IEnumerable<User>>> GetUsersAsync()
