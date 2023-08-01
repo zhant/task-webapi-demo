@@ -10,6 +10,14 @@ using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (!builder.Environment.IsDevelopment())
+{
+    builder.WebHost.ConfigureKestrel(options =>
+    {
+        options.ListenAnyIP(8000);
+    });
+}
+
 builder.Services.Configure<TaskEngineOptions>(builder.Configuration.GetSection("TaskEngine"));
 
 builder.Services.AddTransient<ITaskEngine, TaskEngine>();
