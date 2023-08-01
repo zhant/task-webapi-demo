@@ -75,10 +75,10 @@ public class UsersController : ControllerBase
             : BadRequest(result.ErrorMessage);
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteUser(string id)
+    [HttpDelete("{userName}")]
+    public async Task<IActionResult> DeleteUser(string userName)
     {
-        var result = await _taskEngine.DeleteUserAsync(id);
+        var result = await _taskEngine.DeleteUserAsync(userName);
         return result.IsSuccess
             ? NoContent()
             : BadRequest(result.ErrorMessage);
