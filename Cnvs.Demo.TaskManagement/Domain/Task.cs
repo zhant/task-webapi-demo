@@ -2,6 +2,28 @@
 
 public class Task
 {
+    /// <summary>
+    /// Id is a unique identifier for the task.
+    /// </summary>
+    public Guid Id { get; set; }
+    
+    /// <summary>
+    /// Description is a short description of the task. Is not unique by requirement.
+    /// </summary>
+    public string Description { get; set; }
+    
+    public TaskState State { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? StartedAt { get; set; }
+    public DateTime? SuspendedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public DateTime? DeletedAt { get; set; }
+
+    public User AssignedUser { get; set; } = NullUser.Instance;
+    public List<User> AssignedUsersHistory { get; set; } = new();
+    public int TransferCount { get; set; }
+    public bool IsDeleted { get; set; }
+    
     private protected Task(Guid taskId, string taskDescription)
     {
         if (string.IsNullOrWhiteSpace(taskDescription))
@@ -33,28 +55,6 @@ public class Task
             AssignedUser = NullUser.Instance
         };
     }
-
-    /// <summary>
-    /// Id is a unique identifier for the task.
-    /// </summary>
-    public Guid Id { get; set; }
-    
-    /// <summary>
-    /// Description is a short description of the task. Is not unique by requirement.
-    /// </summary>
-    public string Description { get; set; }
-    
-    public TaskState State { get; set; }
-    public DateTime CreatedAt { get; set; }
-    public DateTime? StartedAt { get; set; }
-    public DateTime? SuspendedAt { get; set; }
-    public DateTime? CompletedAt { get; set; }
-    public DateTime? DeletedAt { get; set; }
-
-    public User AssignedUser { get; set; } = NullUser.Instance;
-    public List<User> AssignedUsersHistory { get; set; } = new();
-    public int TransferCount { get; set; }
-    public bool IsDeleted { get; set; }
 
     public void Complete()
     {
