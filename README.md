@@ -36,5 +36,6 @@ We purposely left requirements loose.
 3. Run `docker build -t task-webapi-demo .` to build the image.
 4. Once the image is built, you can check it in the list of docker images: `docker images`
 4. Run `docker run -p 8000:8000 task-webapi-demo` to run the container.
+5. Follow http://localhost:5188/swagger/index.html to see the API documentation and test the API.
 5. Use PS scripts from .\Cnvs.Demo.TaskManagement.WebApi.Curl\Docker-curls
 
