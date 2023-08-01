@@ -123,18 +123,7 @@ public class TaskEngine : ITaskEngine
             ? Result<IEnumerable<DomainTask>>.Success(result.Value)
             : Result<IEnumerable<DomainTask>>.Failure(result.ErrorMessage, Enumerable.Empty<DomainTask>());
     }
-
-    public async Task<Result<IEnumerable<DomainTask>>> GetTasksAsync(TaskState state)
-    {
-        var result = await _taskRepository.GetTasksAsync(state);
-        if (result.IsFailure)
-        {
-            _logger.LogError("Failed to get tasks: {Error}", result.ErrorMessage);
-        }
-        
-        return result;
-    }
-
+    
     public async Task<Result<DomainTask>> GetTaskAsync(Guid taskId)
     {
         var result = await _taskRepository.GetTaskAsync(taskId);

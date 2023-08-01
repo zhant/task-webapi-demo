@@ -5,7 +5,7 @@ namespace Cnvs.Demo.TaskManagement;
 
 public interface ITaskEngine
 {
-    Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState state = TaskState.Undefined);
+    Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync();
     Task<Result<Domain.Task>> GetTaskAsync(Guid id);
     Task<Result<Domain.Task>> CreateTaskAsync(string taskDescription);
     Task<Result<string>> DeleteTaskAsync(Guid id);
@@ -15,7 +15,6 @@ public interface ITaskEngine
     Task<Result<string>> DeleteUserAsync(string name);
     Task<Result<IEnumerable<Domain.Task>>> GetUserTasksByUserNameAsync(string name);
     Task RotateTask(Domain.Task task);
-    Task<Result<IEnumerable<Domain.Task>>> GetTasksAsync(TaskState[] allowedStates);
     Task<Result<IEnumerable<Domain.Task>>> GetTasks(TaskState[] allowedStates);
     Task<Result<IEnumerable<User>>> GetUsers();
     Task<Result<User>> GetUserAsync(Guid id);
