@@ -7,6 +7,10 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="12.0.1" />
         <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
@@ -19,8 +23,6 @@
         <Link>.dockerignore</Link>
       </Content>
     </ItemGroup>
-
-
 
     <ItemGroup>
       <ProjectReference Include="..\Cnvs.Demo.TaskManagement.Dto\Cnvs.Demo.TaskManagement.Dto.csproj" />

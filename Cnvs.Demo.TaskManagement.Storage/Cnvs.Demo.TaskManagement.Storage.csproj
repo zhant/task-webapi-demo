@@ -11,7 +11,10 @@
       <ProjectReference Include="..\Cnvs.Demo.TaskManagement\Cnvs.Demo.TaskManagement.csproj" />
     </ItemGroup>
 
-
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    </PropertyGroup>
+    
     <ItemGroup>
       <Compile Remove="TaskRepository.cs" />
       <Compile Remove="UserRepository.cs" />
