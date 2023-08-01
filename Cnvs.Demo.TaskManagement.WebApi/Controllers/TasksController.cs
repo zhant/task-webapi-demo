@@ -77,7 +77,7 @@ public class TasksController : ControllerBase
     {
         var result = await _taskEngine.DeleteTaskAsync(id);
         return result.IsSuccess 
-            ? Ok(_mapper.Map<Dto.Task>(result.Value))
+            ? Ok()
             : BadRequest(result.ErrorMessage);
     }
 }
