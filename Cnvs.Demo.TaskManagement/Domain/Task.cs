@@ -75,16 +75,11 @@ public class Task
         AssignedUser = NullUser.Instance;
     }
 
-    public void StartWithUser(User newUser)
+    public void AssignToUser(User newUser)
     {
         if (newUser is NullUser)
         {
             throw new InvalidOperationException("Cannot start a task with a null user");
-        }
-        
-        if (State != TaskState.Waiting)
-        {
-            throw new InvalidOperationException("Cannot start a task that is not in the waiting state");
         }
 
         AssignedUser = newUser;

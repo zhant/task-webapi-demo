@@ -44,7 +44,7 @@ public class TaskEngine : ITaskEngine
             {
                 break;
             }
-        } while (usersToExclude.Contains(newUser));
+        } while (usersToExclude.Contains(newUser, new UserEqualityComparer()));
 
         if (newUser is NullUser)
         {
@@ -52,7 +52,7 @@ public class TaskEngine : ITaskEngine
             return;
         }
         
-        task.StartWithUser(newUser);
+        task.AssignToUser(newUser);
         
         if (task.TransferCount < _changesBetweenUsers)
         {
@@ -97,7 +97,7 @@ public class TaskEngine : ITaskEngine
         var task = Domain.Task.NewTask(taskDescription);
         if (userToBeAssigned is not NullUser)
         {
-            task.StartWithUser(userToBeAssigned);
+            task.AssignToUser(userToBeAssigned);
         }
 
         var taskResult = await _taskRepository.AddTaskAsync(task);

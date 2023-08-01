@@ -5,6 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using DomainTask = Cnvs.Demo.TaskManagement.Domain.Task;
+using Task = System.Threading.Tasks.Task;
 
 namespace Cnvs.Demo.TaskManagement.Tests;
 
@@ -44,7 +45,7 @@ public class When_rotating_task
     }
 
     [Fact]
-    public void RotateTask_Should_Not_Assign_Same_User_Twice()
+    public async Task RotateTask_Should_Not_Assign_Same_User_Twice()
     {
         // Arrange
         var task = Domain.Task.NewTask("Description 1");
@@ -55,26 +56,26 @@ public class When_rotating_task
         A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
         
         // Act
-        _taskEngine.RotateTask(task);
+        await _taskEngine.RotateTask(task);
 
         // Assert
         task.AssignedUser.Name.Should().NotBe("User1");
     }
 
     [Fact]
-    public void RotateTask_Should_SetStateAsWaiting_When_NoUsersAvailable()
+    public async Task RotateTask_Should_SetStateAsWaiting_When_NoUsersAvailable()
     {
         // Arrange
         var user = User.Create("User1");
         var users = new List<User> { user };
         var task = Domain.Task.NewTask("Description 1");
-        task.StartWithUser(user);
+        task.AssignToUser(user);
 
         A.CallTo(() => _fakeUserRepo.GetUsersAsync()).Returns(Result<IEnumerable<User>>.Success(users));
         A.CallTo(() => _fakeTaskRepo.GetTasks()).Returns(Result<IEnumerable<DomainTask>>.Success(new List<DomainTask> { task }));
         A.CallTo(() => _userRandomizer.GetRandomUser(A<IEnumerable<User>>._)).Returns(NullUser.Instance);
         // Act
-        _taskEngine.RotateTask(task);
+        await _taskEngine.RotateTask(task);
 
         // Assert
         task.State.Should().Be(TaskState.Waiting);
