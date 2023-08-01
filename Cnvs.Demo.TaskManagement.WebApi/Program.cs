@@ -7,9 +7,6 @@ using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
 using FluentValidation;
 using FluentValidation.AspNetCore;
-using Task = Cnvs.Demo.TaskManagement.Domain.Task;
-using TaskState = Cnvs.Demo.TaskManagement.Domain.TaskState;
-using User = Cnvs.Demo.TaskManagement.Domain.User;
 
 var builder = WebApplication.CreateBuilder(args);
 
