@@ -2,6 +2,7 @@ using AutoMapper;
 using Cnvs.Demo.TaskManagement;
 using Cnvs.Demo.TaskManagement.Configuration;
 using Cnvs.Demo.TaskManagement.Storage.InMemory;
+using Cnvs.Demo.TaskManagement.WebApi.Configuration;
 using Cnvs.Demo.TaskManagement.WebApi.Middleware;
 using Cnvs.Demo.TaskManagement.WebApi.Validators;
 using FluentValidation;
@@ -19,20 +20,12 @@ builder.Services.AddSingleton<IUserRandomizer, UserRandomizer>();
 builder.Services.AddSingleton<ITaskRepository, TaskInMemoryRepository>();
 builder.Services.AddSingleton<IUserRepository, UserInMemoryRepository>();
 
-var config = new MapperConfiguration(cfg =>
+var mapperConfiguration = new MapperConfiguration(mc =>
 {
-    cfg.CreateMap<Cnvs.Demo.TaskManagement.Dto.User, User>();
-    cfg.CreateMap<User, Cnvs.Demo.TaskManagement.Dto.User>();
-
-    cfg.CreateMap<Cnvs.Demo.TaskManagement.Dto.Task, Task>()
-        .ForMember(dest => dest.State, opt => opt.MapFrom(src => (TaskState)src.State));
-
-    cfg.CreateMap<Task, Cnvs.Demo.TaskManagement.Dto.Task>()
-        .ForMember(dest => dest.State,
-            opt => opt.MapFrom(src => (Cnvs.Demo.TaskManagement.Dto.TaskState)src.State));
+    mc.AddProfile(new MappingProfile());
 });
 
-IMapper mapper = new Mapper(config);
+var mapper = mapperConfiguration.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 builder.Services.AddControllers();
