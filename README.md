@@ -17,6 +17,7 @@ The initial looze requirements are:
 We purposely left requirements loose.
 
 ## How to run
+### Command line
 1. Install .NET 7.0 SDK if you haven't already.
 2. Clone the repository. 
 3. `cd .\task-webapi-demo\`
@@ -29,4 +30,11 @@ We purposely left requirements loose.
 8. Run `.\CreateThreeUsers.ps1` to run the curl script to test the API.
 9. The current implementation is using in-memory database. The data will be lost when the application is stopped.
 10. The current implementation is using a simple timer to reassign tasks. The timer will be stopped when the application is stopped.
+### Docker
+1. Install Docker if you haven't already.
+2. First, in your terminal, navigate to the directory containing the Dockerfile `cd .\Cnvs.Demo.TaskManagement.WebApi\`
+3. Run `docker build -t task-webapi-demo .` to build the image.
+4. Once the image is built, you can check it in the list of docker images: `docker images`
+4. Run `docker run -p 8000:8000 task-webapi-demo` to run the container.
+5. Use PS scripts from .\Cnvs.Demo.TaskManagement.WebApi.Curl\Docker-curls
 
